@@ -17,7 +17,7 @@ namespace ProductGrpc.Services
 
         public override async Task<ProductResponse> Create(ProductRequest request, ServerCallContext context)
         {
-            var product = new Product(request.Name, request.Description, request.Price, (ProductStatus)request.Status);
+            var product = new Product(request.Name, request.Description, request.Price);
             var result = await _productApplication.SaveAsync(product);
 
             var response = new ProductResponse
@@ -26,7 +26,6 @@ namespace ProductGrpc.Services
                 Name = result.Name,
                 Description = result.Description,
                 Price = result.Price,
-                Status = (int)result.Status,
                 CreatedAt = result.CreatedAt.ToString("dd/MM/yyyy")
             };
 

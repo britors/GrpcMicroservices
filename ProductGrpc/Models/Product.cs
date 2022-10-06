@@ -22,13 +22,13 @@ namespace ProductGrpc.Models
             CreatedAt = createdAt;
         }
 
-        public Product(string name, string description, float price, ProductStatus status)
+        public Product(string name, string description, float price)
         {
             Id = Guid.NewGuid();
             Name = name;
             Description = description;
             Price = price;
-            Status = status;
+            Status = ProductStatus.NONE;
             CreatedAt = DateTime.Now;
         }
 
