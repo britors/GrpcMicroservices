@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option csharp_namespace = "ProductGrpc.Protos";
+
+package product;
+
+service ProductCreator {
+	rpc Create (ProductRequest) returns (ProductResponse);
+}
+
+message ProductRequest {
+	string name = 1;
+	string description = 2;
+	float price = 3;
+	int32 status = 4;
+}
+
+message ProductResponse {
+	string id = 1;
+	string name = 2;
+	string description = 3;
+	float price = 4;
+	int32 status = 5;
+	string createdAt = 6;
+}
