@@ -5,19 +5,20 @@ option csharp_namespace = "ProductGrpc.Protos";
 package product;
 
 service ProductCreator {
-	rpc Create (ProductRequest) returns (ProductResponse);
+	rpc Create (ProductCreatorRequest) returns (ProductCreatorResult);
 }
 
-message ProductRequest {
+message ProductCreatorRequest {
 	string name = 1;
 	string description = 2;
 	float price = 3;
 }
 
-message ProductResponse {
+message ProductCreatorResult {
 	string id = 1;
 	string name = 2;
 	string description = 3;
 	float price = 4;
-	string createdAt = 5;
+	int32 status = 5;
+	string createdAt = 6;
 }
