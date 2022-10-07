@@ -11,7 +11,20 @@ namespace ProductGrpc.Application
 
         public ProductApplication(IProductRepository repository) => _repository = repository;
         public async Task<IEnumerable<Product>> GetAllAsync() => await _repository.GetAllAsync();
-        public async Task<Product?> GetByIdAsync(Guid id) => await _repository.GetByIdAsync(id);
-        public async Task<Product> SaveAsync(Product product) => await _repository.SaveAsync(product);
+        public async Task<Product> GetByIdAsync(Guid id)
+        {
+            var product = await _repository.GetByIdAsync(id);
+            if (product == null)
+                throw new ArgumentException("Produto não encontrado");
+
+            return product;
+        }
+        public async Task<Product> SaveAsync(Product product, bool IsNewProduct = false)
+        {
+            if (IsNewProduct)
+                return await _repository.AddAsync(product);
+            else
+                return await _repository.UpdateAsync(product);
+        }
     }
 }

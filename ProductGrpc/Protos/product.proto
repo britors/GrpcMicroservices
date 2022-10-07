@@ -5,16 +5,25 @@ option csharp_namespace = "ProductGrpc.Protos";
 package productGrpc;
 
 service ProductCrpcCommunicator {
-	rpc Create (ProductCreatorRequest) returns (ProductCreatorResult);
+	rpc Create (ProductCreateRequest) returns (ProductResult);
+	rpc Update(ProductUpdateRequest) returns(ProductResult);
+
 }
 
-message ProductCreatorRequest {
+message ProductCreateRequest {
 	string name = 1;
 	string description = 2;
 	float price = 3;
 }
 
-message ProductCreatorResult {
+message ProductUpdateRequest {
+	string id = 1;
+	string name = 2;
+	string description = 3;
+	float price = 4;
+}
+
+message ProductResult {
 	string id = 1;
 	string name = 2;
 	string description = 3;

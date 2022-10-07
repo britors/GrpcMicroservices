@@ -4,34 +4,12 @@ namespace ProductGrpc.Models
 {
     public class Product
     {
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public string Description { get; private set; }
-        public float Price { get; private set; }
-        public ProductStatus Status { get; private set; }
-        public DateTime CreatedAt { get; private set; }
-
-
-        public Product(Guid id, string name, string description, float price, ProductStatus status, DateTime createdAt)
-        {
-            Id = id;
-            Name = name;
-            Description = description;
-            Price = price;
-            Status = status;
-            CreatedAt = createdAt;
-        }
-
-        public Product(string name, string description, float price)
-        {
-            Id = Guid.NewGuid();
-            Name = name;
-            Description = description;
-            Price = price;
-            Status = ProductStatus.NONE;
-            CreatedAt = DateTime.Now;
-        }
-
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public float Price { get; set; }
+        public ProductStatus Status { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 
 }
