@@ -5,7 +5,7 @@ using ProductGrpc.Protos;
 
 namespace ProductGrpc.Services
 {
-    public class ProductService : ProductCommunicator.ProductCommunicatorBase
+    public class ProductService : ProductCrpcCommunicator.ProductCrpcCommunicatorBase
     {
         private readonly IProductApplication _productApplication;
 
