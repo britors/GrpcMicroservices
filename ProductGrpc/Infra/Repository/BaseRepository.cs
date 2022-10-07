@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductGrpc.Data.Context;
 using ProductGrpc.Infra.Repository.Includes;
-using ProductGrpc.Models;
 
 namespace ProductGrpc.Infra.Repository
 {
@@ -27,11 +26,11 @@ namespace ProductGrpc.Infra.Repository
             return await Task.FromResult(item);
         }
 
-
         public async Task<IQueryable<T>> GetAllAsync(){
             var items = _context.Set<T>().AsQueryable();
             return await Task.FromResult(items);
         }
+
         public async Task<T?> GetAsync(Key key) 
             => await _context
                     .Set<T>()
