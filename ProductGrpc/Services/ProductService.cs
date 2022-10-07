@@ -5,11 +5,11 @@ using ProductGrpc.Protos;
 
 namespace ProductGrpc.Services
 {
-    public class ProductCreatorService : ProductCreator.ProductCreatorBase
+    public class ProductService : ProductCommunicator.ProductCommunicatorBase
     {
         private readonly IProductApplication _productApplication;
 
-        public ProductCreatorService(IProductApplication productApplication)
+        public ProductService(IProductApplication productApplication)
         {
             _productApplication = productApplication;
         }

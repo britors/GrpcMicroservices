@@ -1,10 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using ProductGrpc.Application;
-using ProductGrpc.Application.Includes;
+using ProductGrpc.CrossCutting.DI;
 using ProductGrpc.Data.Context;
-using ProductGrpc.Infra.Repository;
-using ProductGrpc.Infra.Repository.Includes;
-using ProductGrpc.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,12 +8,12 @@ builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
 builder.Services.AddDbContext<ProductContext>();
 
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IProductApplication, ProductApplication>();
+Repositories.MakeInjectDependencies(builder.Services);
+Applications.MakeInjectDependencies(builder.Services);
 
 var app = builder.Build();
+Services.MapGrpcServices(app);
 
-app.MapGrpcService<ProductCreatorService>();
 app.MapGet("/", () => "Product Microservice");
 
 if (app.Environment.IsDevelopment())
