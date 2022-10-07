@@ -14,7 +14,14 @@ namespace ProductGrpc.Services
         {
             _productApplication = productApplication;
         }
-
+        
+        /// <summary>
+        /// Criar novo Produto
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="RpcException"></exception>
         public override async Task<ProductResult> Create(ProductCreateRequest request, ServerCallContext context)
         {
             try
@@ -40,6 +47,13 @@ namespace ProductGrpc.Services
             }
         }
 
+        /// <summary>
+        /// Atualizar Produto
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="RpcException"></exception>
         public override async Task<ProductResult> Update(ProductUpdateRequest request, ServerCallContext context)
         {
             try
@@ -64,6 +78,13 @@ namespace ProductGrpc.Services
             }
         }
 
+        /// <summary>
+        /// Excluir um produto
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="RpcException"></exception>
         public override async Task<ProductDeleted> Delete(ProductIndexRequest request, ServerCallContext context)
         {
             try
@@ -83,6 +104,13 @@ namespace ProductGrpc.Services
             }
         }
 
+        /// <summary>
+        /// Buscar produto pela chave primaria
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="RpcException"></exception>
         public override async Task<ProductResult> GetProduct(ProductIndexRequest request, ServerCallContext context)
         {
             try
