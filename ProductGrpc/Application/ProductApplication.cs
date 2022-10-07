@@ -10,12 +10,13 @@ namespace ProductGrpc.Application
         private readonly IProductRepository _repository;
 
         public ProductApplication(IProductRepository repository) => _repository = repository;
+        public async Task DeletedAsync(Product product) => await _repository.DeleteAsync(product);
         public async Task<IEnumerable<Product>> GetAllAsync() => await _repository.GetAllAsync();
         public async Task<Product> GetByIdAsync(Guid id)
         {
             var product = await _repository.GetAsync(id);
             if (product == null)
-                throw new ArgumentException("Produto não encontrado");
+                throw new KeyNotFoundException("Produto não encontrado");
 
             return product;
         }

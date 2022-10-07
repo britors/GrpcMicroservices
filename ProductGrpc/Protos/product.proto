@@ -6,7 +6,8 @@ package productGrpc;
 
 service ProductCrpcCommunicator {
 	rpc Create (ProductCreateRequest) returns (ProductResult);
-	rpc Update(ProductUpdateRequest) returns(ProductResult);
+	rpc Update (ProductUpdateRequest) returns (ProductResult);
+	rpc Delete (ProductDeleteRequest) returns (ProductDeleted);
 
 }
 
@@ -23,6 +24,11 @@ message ProductUpdateRequest {
 	float price = 4;
 }
 
+
+message ProductDeleteRequest {
+	string id = 1;
+}
+
 message ProductResult {
 	string id = 1;
 	string name = 2;
@@ -30,4 +36,8 @@ message ProductResult {
 	float price = 4;
 	int32 status = 5;
 	string createdAt = 6;
+}
+
+message ProductDeleted {
+	string id = 1;
 }

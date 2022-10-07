@@ -19,8 +19,9 @@ namespace ProductGrpc.Services
         {
             try
             {
-                
-                var product = new Product{
+
+                var product = new Product
+                {
                     Id = Guid.NewGuid(),
                     Name = request.Name,
                     Description = request.Description,
@@ -32,18 +33,13 @@ namespace ProductGrpc.Services
                 var result = await _productApplication.SaveAsync(product, true);
                 return BuildReturn(result);
             }
-            catch (ArgumentException e)
-            {
-                Console.WriteLine(e);
-                throw new RpcException(new Status(StatusCode.InvalidArgument, e.Message));
-            }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw new RpcException(new Status(StatusCode.Internal, e.Message));
             }
         }
-        
+
         public override async Task<ProductResult> Update(ProductUpdateRequest request, ServerCallContext context)
         {
             try
@@ -56,7 +52,7 @@ namespace ProductGrpc.Services
                 var result = await _productApplication.SaveAsync(product);
                 return BuildReturn(result);
             }
-            catch (ArgumentException e)
+            catch (KeyNotFoundException e)
             {
                 Console.WriteLine(e);
                 throw new RpcException(new Status(StatusCode.InvalidArgument, e.Message));
@@ -67,7 +63,27 @@ namespace ProductGrpc.Services
                 throw new RpcException(new Status(StatusCode.Internal, e.Message));
             }
         }
-        
+
+        public override async Task<ProductDeleted> Delete(ProductDeleteRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var productId = new Guid(request.Id);
+                var product = await _productApplication.GetByIdAsync(productId);
+                await _productApplication.DeletedAsync(product);
+                return new ProductDeleted
+                {
+                    Id = request.Id
+                };
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new RpcException(new Status(StatusCode.Internal, e.Message));
+            }
+        }
+
+
         /// <summary>
         /// Cria um retorno da chamada
         /// </summary>

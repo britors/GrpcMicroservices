@@ -20,7 +20,7 @@ namespace ProductGrpc.Infra.Repository
         {
             _context.Entry(item).State = EntityState.Added;
             _context.Add(item);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return await Task.FromResult(item);
         }
 
@@ -32,8 +32,19 @@ namespace ProductGrpc.Infra.Repository
         public async Task<T> UpdateAsync(T item)
         {
             _context.Entry(item).State = EntityState.Modified;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return await Task.FromResult(item);
+        }
+
+        /// <summary>
+        /// Excluir um registro da entidade
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task DeleteAsync(T item)
+        {
+            _context.Entry(item).State = EntityState.Deleted;
+            await _context.SaveChangesAsync();
         }
 
         /// <summary>
