@@ -2,11 +2,7 @@
 
 namespace ProductGrpc.Infra.Repository.Includes
 {
-    public interface IProductRepository
+    public interface IProductRepository: IBaseRepository<Product, Guid>
     {
-        Task<Product> AddAsync(Product product);
-        Task<Product> UpdateAsync(Product product);
-        Task<Product?> GetByIdAsync(Guid id);
-        Task<IQueryable<Product>> GetAllAsync();
     }
 }

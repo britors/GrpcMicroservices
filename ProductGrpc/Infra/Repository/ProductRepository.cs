@@ -5,33 +5,12 @@ using ProductGrpc.Models;
 
 namespace ProductGrpc.Infra.Repository
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository :  BaseRepository<Product, Guid>, IProductRepository
     {
         private readonly ProductContext _context;
 
-        public ProductRepository(ProductContext context) =>
+        public ProductRepository(ProductContext context) : base(context) {
             _context = context;
-
-        public async Task<Product> AddAsync(Product product)
-        {
-            _context.Products.Add(product);
-            _context.SaveChanges();
-            return await Task.FromResult(product);
         }
-
-        public async Task<Product> UpdateAsync(Product product)
-        {
-            _context.Entry(product).State = EntityState.Modified;
-            _context.SaveChanges();
-            return await Task.FromResult(product);
-        }
-
-        public async Task<IQueryable<Product>> GetAllAsync() =>
-            await Task.FromResult(_context.Products);
-
-        public async Task<Product?> GetByIdAsync(Guid id) =>
-            await _context
-                    .Set<Product>()
-                    .FindAsync(id);
     }
 }

@@ -13,7 +13,7 @@ namespace ProductGrpc.Application
         public async Task<IEnumerable<Product>> GetAllAsync() => await _repository.GetAllAsync();
         public async Task<Product> GetByIdAsync(Guid id)
         {
-            var product = await _repository.GetByIdAsync(id);
+            var product = await _repository.GetAsync(id);
             if (product == null)
                 throw new ArgumentException("Produto não encontrado");
 
