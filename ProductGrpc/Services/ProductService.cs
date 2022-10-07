@@ -64,7 +64,7 @@ namespace ProductGrpc.Services
             }
         }
 
-        public override async Task<ProductDeleted> Delete(ProductDeleteRequest request, ServerCallContext context)
+        public override async Task<ProductDeleted> Delete(ProductIndexRequest request, ServerCallContext context)
         {
             try
             {
@@ -83,6 +83,25 @@ namespace ProductGrpc.Services
             }
         }
 
+        public override async Task<ProductResult> GetProduct(ProductIndexRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var productId = new Guid(request.Id);
+                var product = await _productApplication.GetByIdAsync(productId);
+                return BuildReturn(product);
+            }
+            catch (KeyNotFoundException e)
+            {
+                Console.WriteLine(e);
+                throw new RpcException(new Status(StatusCode.InvalidArgument, e.Message));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new RpcException(new Status(StatusCode.Internal, e.Message));
+            }
+        }
 
         /// <summary>
         /// Cria um retorno da chamada

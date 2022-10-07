@@ -5,9 +5,10 @@ option csharp_namespace = "ProductGrpc.Protos";
 package productGrpc;
 
 service ProductCrpcCommunicator {
-	rpc Create (ProductCreateRequest) returns (ProductResult);
-	rpc Update (ProductUpdateRequest) returns (ProductResult);
-	rpc Delete (ProductDeleteRequest) returns (ProductDeleted);
+	rpc Create		(ProductCreateRequest)	returns (ProductResult);
+	rpc Update		(ProductUpdateRequest)	returns (ProductResult);
+	rpc Delete		(ProductIndexRequest)	returns (ProductDeleted);
+	rpc GetProduct	(ProductIndexRequest)	returns (ProductResult);
 
 }
 
@@ -25,7 +26,7 @@ message ProductUpdateRequest {
 }
 
 
-message ProductDeleteRequest {
+message ProductIndexRequest {
 	string id = 1;
 }
 
