@@ -4,7 +4,7 @@ option csharp_namespace = "ProductGrpc.Protos";
 
 package productGrpc;
 
-service ProductCrpcCommunicator {
+service ProductGrpcCommunicator {
 	rpc Create		(ProductCreateRequest)	returns (ProductResult);
 	rpc Update		(ProductUpdateRequest)	returns (ProductResult);
 	rpc Delete		(ProductIndexRequest)	returns (ProductDeleted);
