@@ -173,7 +173,7 @@ namespace ProductGrpc.Services
                 Description = product.Description,
                 Price = product.Price,
                 Status = (Int32)product.Status,
-                CreatedAt = product.CreatedAt.ToString("dd/MM/yyyy")
+                CreatedAt = product.CreatedAt.ToUniversalTime().ToTimestamp()
             };
         }
     }
