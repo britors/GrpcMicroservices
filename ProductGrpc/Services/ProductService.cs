@@ -133,6 +133,13 @@ namespace ProductGrpc.Services
             }
         }
 
+        /// <summary>
+        /// Retornar lista de produtos (sync)
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="RpcException"></exception>
         public override async Task<ProductsResult> GetProducts(Empty request, ServerCallContext context)
         {
             try
