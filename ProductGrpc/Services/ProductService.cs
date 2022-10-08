@@ -1,5 +1,5 @@
 ﻿using Grpc.Core;
-using ProductGrpc.Application.Includes;
+using ProductGrpc.Infra.Repository.Includes;
 using ProductGrpc.Models;
 using ProductGrpc.Models.Enums;
 using ProductGrpc.Protos;
@@ -8,13 +8,12 @@ namespace ProductGrpc.Services
 {
     public class ProductService : ProductGrpcCommunicator.ProductGrpcCommunicatorBase
     {
-        private readonly IProductApplication _productApplication;
+        private readonly IProductRepository _productRepository;
 
-        public ProductService(IProductApplication productApplication)
-        {
-            _productApplication = productApplication;
-        }
-        
+        public ProductService(IProductRepository productRepository)
+            => _productRepository = productRepository;
+
+
         /// <summary>
         /// Criar novo Produto
         /// </summary>
@@ -37,7 +36,7 @@ namespace ProductGrpc.Services
                     CreatedAt = DateTime.UtcNow,
                 };
 
-                var result = await _productApplication.SaveAsync(product, true);
+                var result = await _productRepository.AddAsync(product);
                 return BuildReturn(result);
             }
             catch (Exception e)
@@ -59,17 +58,16 @@ namespace ProductGrpc.Services
             try
             {
                 var productId = new Guid(request.Id);
-                var product = await _productApplication.GetByIdAsync(productId);
+                var product = await _productRepository.GetAsync(productId);
+                if (product == null)
+                {
+                    throw new RpcException(new Status(StatusCode.InvalidArgument, "Produto não encontrado"));
+                }
                 product.Name = request.Name;
                 product.Description = request.Description;
                 product.Price = request.Price;
-                var result = await _productApplication.SaveAsync(product);
+                var result = await _productRepository.UpdateAsync(product);
                 return BuildReturn(result);
-            }
-            catch (KeyNotFoundException e)
-            {
-                Console.WriteLine(e);
-                throw new RpcException(new Status(StatusCode.InvalidArgument, e.Message));
             }
             catch (Exception e)
             {
@@ -90,8 +88,12 @@ namespace ProductGrpc.Services
             try
             {
                 var productId = new Guid(request.Id);
-                var product = await _productApplication.GetByIdAsync(productId);
-                await _productApplication.DeletedAsync(product);
+                var product = await _productRepository.GetAsync(productId);
+                if (product == null)
+                {
+                    throw new RpcException(new Status(StatusCode.InvalidArgument, "Produto não encontrado"));
+                }
+                await _productRepository.DeleteAsync(product);
                 return new ProductDeleted
                 {
                     Id = request.Id
@@ -116,13 +118,12 @@ namespace ProductGrpc.Services
             try
             {
                 var productId = new Guid(request.Id);
-                var product = await _productApplication.GetByIdAsync(productId);
+                var product = await _productRepository.GetAsync(productId);
+                if (product == null)
+                {
+                    throw new RpcException(new Status(StatusCode.InvalidArgument, "Produto não encontrado"));
+                }
                 return BuildReturn(product);
-            }
-            catch (KeyNotFoundException e)
-            {
-                Console.WriteLine(e);
-                throw new RpcException(new Status(StatusCode.InvalidArgument, e.Message));
             }
             catch (Exception e)
             {
@@ -139,12 +140,21 @@ namespace ProductGrpc.Services
         /// <returns></returns>
         public override async Task<ProductsResult> GetProducts(ProductFiltersRequest request, ServerCallContext context)
         {
-            var products = await _productApplication.GetAllAsync();
-            var result = new ProductsResult();
-            foreach (var product in products){
-                result.Products.Add(BuildReturn(product));
+            try
+            {
+                var products = await _productRepository.GetAllAsync();
+                var result = new ProductsResult();
+                foreach (var product in products)
+                {
+                    result.Products.Add(BuildReturn(product));
+                }
+                return result;
             }
-            return result;
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new RpcException(new Status(StatusCode.Internal, e.Message));
+            }
         }
 
         /// <summary>
