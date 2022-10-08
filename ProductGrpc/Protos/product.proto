@@ -1,15 +1,16 @@
 syntax = "proto3";
+import "google/protobuf/empty.proto";
 
 option csharp_namespace = "ProductGrpc.Protos";
 
 package productGrpc;
 
 service ProductGrpcCommunicator {
-	rpc Create(ProductCreateRequest) returns (ProductResult);
-	rpc Update(ProductUpdateRequest) returns (ProductResult);
+	rpc Create(ProductCreateRequest) returns (ProductModel);
+	rpc Update(ProductUpdateRequest) returns (ProductModel);
 	rpc Delete(ProductIndexRequest)	returns (ProductDeleted);
-	rpc GetProduct(ProductIndexRequest)	returns (ProductResult);
-	rpc GetProducts(ProductFiltersRequest) returns (ProductsResult);
+	rpc GetProduct(ProductIndexRequest)	returns (ProductModel);
+	rpc GetProducts(google.protobuf.Empty) returns (ProductsResult);
 
 }
 
@@ -27,19 +28,15 @@ message ProductUpdateRequest {
 	float price = 4;
 }
 
-
-message ProductFiltersRequest {
-}
-
 message ProductIndexRequest {
 	string id = 1;
 }
 
 message ProductsResult {
-	repeated ProductResult products =1;
+	repeated ProductModel products =1;
 }
 
-message ProductResult {
+message ProductModel {
 	string id = 1;
 	string name = 2;
 	string description = 3;

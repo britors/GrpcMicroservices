@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using ProductGrpc.Infra.Repository.Includes;
 using ProductGrpc.Models;
 using ProductGrpc.Models.Enums;
@@ -21,7 +22,7 @@ namespace ProductGrpc.Services
         /// <param name="context"></param>
         /// <returns></returns>
         /// <exception cref="RpcException"></exception>
-        public override async Task<ProductResult> Create(ProductCreateRequest request, ServerCallContext context)
+        public override async Task<ProductModel> Create(ProductCreateRequest request, ServerCallContext context)
         {
             try
             {
@@ -53,7 +54,7 @@ namespace ProductGrpc.Services
         /// <param name="context"></param>
         /// <returns></returns>
         /// <exception cref="RpcException"></exception>
-        public override async Task<ProductResult> Update(ProductUpdateRequest request, ServerCallContext context)
+        public override async Task<ProductModel> Update(ProductUpdateRequest request, ServerCallContext context)
         {
             try
             {
@@ -113,7 +114,7 @@ namespace ProductGrpc.Services
         /// <param name="context"></param>
         /// <returns></returns>
         /// <exception cref="RpcException"></exception>
-        public override async Task<ProductResult> GetProduct(ProductIndexRequest request, ServerCallContext context)
+        public override async Task<ProductModel> GetProduct(ProductIndexRequest request, ServerCallContext context)
         {
             try
             {
@@ -138,7 +139,8 @@ namespace ProductGrpc.Services
         /// <param name="request"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override async Task<ProductsResult> GetProducts(ProductFiltersRequest request, ServerCallContext context)
+        /// 
+        public override async Task<ProductsResult> GetProducts(Empty request, ServerCallContext context)
         {
             try
             {
@@ -162,9 +164,9 @@ namespace ProductGrpc.Services
         /// </summary>
         /// <param name="product">Produto</param>
         /// <returns>Result</returns>
-        private static ProductResult BuildReturn(Product product)
+        private static ProductModel BuildReturn(Product product)
         {
-            return new ProductResult
+            return new ProductModel
             {
                 Id = product.Id.ToString(),
                 Name = product.Name,
