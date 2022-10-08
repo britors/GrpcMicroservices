@@ -140,17 +140,16 @@ namespace ProductGrpc.Services
         /// <param name="context"></param>
         /// <returns></returns>
         /// 
-        public override async Task<ProductsResult> GetProducts(Empty request, ServerCallContext context)
+        public override async Task GetProductsAsync(Empty request, IServerStreamWriter<ProductModel> responseStream, ServerCallContext context)
         {
             try
             {
                 var products = await _productRepository.GetAllAsync();
-                var result = new ProductsResult();
                 foreach (var product in products)
                 {
-                    result.Products.Add(BuildReturn(product));
+                    var model = BuildReturn(product);
+                    await responseStream.WriteAsync(model);
                 }
-                return result;
             }
             catch (Exception e)
             {
@@ -173,7 +172,7 @@ namespace ProductGrpc.Services
                 Description = product.Description,
                 Price = product.Price,
                 Status = (Int32)product.Status,
-                CreatedAt = product.CreatedAt.ToUniversalTime().ToTimestamp()
+                CreatedAt = product.CreatedAt.ToString("dd/MM/yyyy")
             };
         }
     }
