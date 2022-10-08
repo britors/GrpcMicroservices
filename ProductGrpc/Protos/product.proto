@@ -12,6 +12,7 @@ service ProductGrpcCommunicator {
 	rpc Update(ProductUpdateRequest) returns (ProductModel);
 	rpc Delete(ProductIndexRequest)	returns (ProductDeleted);
 	rpc GetProduct(ProductIndexRequest)	returns (ProductModel);
+	rpc GetProducts(google.protobuf.Empty) returns (ProductsResult);
 	rpc GetProductsAsync(google.protobuf.Empty) returns (stream ProductModel);
 
 }
@@ -39,7 +40,11 @@ message ProductModel {
 	string description = 3;
 	float price = 4;
 	int32 status = 5;
-	string createdAt = 6;
+	google.protobuf.Timestamp createdAt = 6;
+}
+
+message ProductsResult {
+	repeated ProductModel products = 1;
 }
 
 message ProductDeleted {

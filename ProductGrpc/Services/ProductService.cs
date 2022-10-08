@@ -133,8 +133,28 @@ namespace ProductGrpc.Services
             }
         }
 
+        public override async Task<ProductsResult> GetProducts(Empty request, ServerCallContext context)
+        {
+            try
+            {
+                var products = await GetProducts();
+                var result = new ProductsResult();
+                foreach (var product in products)
+                {
+                    var model = BuildReturn(product);
+                    result.Products.Add(model);
+                }
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new RpcException(new Status(StatusCode.Internal, e.Message));
+            }
+        }
+
         /// <summary>
-        /// Retorna uma lista de produtos
+        /// Retorna uma lista de produtos (async)
         /// </summary>
         /// <param name="request"></param>
         /// <param name="context"></param>
@@ -144,7 +164,7 @@ namespace ProductGrpc.Services
         {
             try
             {
-                var products = await _productRepository.GetAllAsync();
+                var products = await GetProducts();
                 foreach (var product in products)
                 {
                     var model = BuildReturn(product);
@@ -157,6 +177,9 @@ namespace ProductGrpc.Services
                 throw new RpcException(new Status(StatusCode.Internal, e.Message));
             }
         }
+
+        private async Task<IEnumerable<Product>> GetProducts()
+            => await _productRepository.GetAllAsync();
 
         /// <summary>
         /// Cria um retorno da chamada
@@ -172,7 +195,7 @@ namespace ProductGrpc.Services
                 Description = product.Description,
                 Price = product.Price,
                 Status = (Int32)product.Status,
-                CreatedAt = product.CreatedAt.ToString("dd/MM/yyyy")
+                CreatedAt = Timestamp.FromDateTime(product.CreatedAt.ToUniversalTime()),
             };
         }
     }
