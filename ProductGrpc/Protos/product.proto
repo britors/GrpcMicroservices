@@ -12,6 +12,7 @@ service ProductGrpcCommunicator {
 	rpc Update(ProductUpdateRequest) returns (ProductModel);
 	rpc Delete(ProductIndexRequest)	returns (ProductDeleted);
 	rpc GetProduct(ProductIndexRequest)	returns (ProductModel);
+	rpc GetProductAsync(ProductIndexRequest)	returns (stream ProductModel);
 	rpc GetProducts(google.protobuf.Empty) returns (ProductsResult);
 	rpc GetProductsAsync(google.protobuf.Empty) returns (stream ProductModel);
 

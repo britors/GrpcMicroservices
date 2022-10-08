@@ -133,6 +133,29 @@ namespace ProductGrpc.Services
             }
         }
 
+        public override async Task GetProductAsync( ProductIndexRequest request,
+                                                    IServerStreamWriter<ProductModel> responseStream,
+                                                    ServerCallContext context)
+        {
+            try
+            {
+                var productId = new Guid(request.Id);
+                var product = await _productRepository.GetAsync(productId);
+                if (product == null)
+                {
+                    throw new RpcException(new Status(StatusCode.InvalidArgument, "Produto não encontrado"));
+                }
+                var model = BuildReturn(product);
+                await responseStream.WriteAsync(model);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new RpcException(new Status(StatusCode.Internal, e.Message));
+            }
+
+        }
+
         /// <summary>
         /// Retornar lista de produtos (sync)
         /// </summary>
@@ -167,7 +190,9 @@ namespace ProductGrpc.Services
         /// <param name="context"></param>
         /// <returns></returns>
         /// 
-        public override async Task GetProductsAsync(Empty request, IServerStreamWriter<ProductModel> responseStream, ServerCallContext context)
+        public override async Task GetProductsAsync(Empty request,
+                                                    IServerStreamWriter<ProductModel> responseStream,
+                                                    ServerCallContext context)
         {
             try
             {
