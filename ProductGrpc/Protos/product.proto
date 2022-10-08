@@ -5,10 +5,11 @@ option csharp_namespace = "ProductGrpc.Protos";
 package productGrpc;
 
 service ProductGrpcCommunicator {
-	rpc Create		(ProductCreateRequest)	returns (ProductResult);
-	rpc Update		(ProductUpdateRequest)	returns (ProductResult);
-	rpc Delete		(ProductIndexRequest)	returns (ProductDeleted);
-	rpc GetProduct	(ProductIndexRequest)	returns (ProductResult);
+	rpc Create(ProductCreateRequest) returns (ProductResult);
+	rpc Update(ProductUpdateRequest) returns (ProductResult);
+	rpc Delete(ProductIndexRequest)	returns (ProductDeleted);
+	rpc GetProduct(ProductIndexRequest)	returns (ProductResult);
+	rpc GetProducts(ProductFiltersRequest) returns (ProductsResult);
 
 }
 
@@ -18,6 +19,7 @@ message ProductCreateRequest {
 	float price = 3;
 }
 
+
 message ProductUpdateRequest {
 	string id = 1;
 	string name = 2;
@@ -26,8 +28,15 @@ message ProductUpdateRequest {
 }
 
 
+message ProductFiltersRequest {
+}
+
 message ProductIndexRequest {
 	string id = 1;
+}
+
+message ProductsResult {
+	repeated ProductResult products =1;
 }
 
 message ProductResult {

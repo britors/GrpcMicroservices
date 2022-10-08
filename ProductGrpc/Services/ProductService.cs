@@ -132,6 +132,22 @@ namespace ProductGrpc.Services
         }
 
         /// <summary>
+        /// Retorna uma lista de produtos
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override async Task<ProductsResult> GetProducts(ProductFiltersRequest request, ServerCallContext context)
+        {
+            var products = await _productApplication.GetAllAsync();
+            var result = new ProductsResult();
+            foreach (var product in products){
+                result.Products.Add(BuildReturn(product));
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Cria um retorno da chamada
         /// </summary>
         /// <param name="product">Produto</param>
