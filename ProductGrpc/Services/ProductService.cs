@@ -208,13 +208,18 @@ namespace ProductGrpc.Services
         /// <returns></returns>
         private async Task<IEnumerable<Product>> GetProducts(ProductFilter filter)
         {
-            var products = await _productApplication.GetAllAsync();
+            Func<Product, bool>? predicate = null;
+            
+            // TODO : Melhorar filtro
             if (!string.IsNullOrEmpty(filter.Name))
-                products = products.Where(p => p.Name == filter.Name);
+                predicate = (x => x.Name == filter.Name);
 
             if (filter.Status > 0)
-                products = products.Where(p => p.Status == (ProductStatus)filter.Status);
+                predicate = predicate == null ?  
+                    (x => x.Status.Equals((ProductStatus)filter.Status)) 
+                    : (x => x.Name == filter.Name && x.Status.Equals((ProductStatus)filter.Status));
 
+            var products = await _productApplication.GetAllAsync(predicate);
             return products;
         }
 
