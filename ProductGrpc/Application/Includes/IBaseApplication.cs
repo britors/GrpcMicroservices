@@ -18,7 +18,7 @@
             where TResponse : class
             where TRequest : class;
 
-        Task<IQueryable<TModel>> GetAllAsync();
+        Task<IQueryable<TModel>> GetAllAsync(Func<TModel, bool>? predicate = null, string[]? includes = null);
 
         TResponse? GetReturn<TResponse>(TModel model) where TResponse : class;
     }
