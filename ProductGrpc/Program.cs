@@ -9,6 +9,7 @@ builder.Services.AddGrpcReflection();
 builder.Services.AddDbContext<ProductContext>();
 
 Repositories.MakeInjectDependencies(builder.Services);
+Applications.MakeInjectDependencies(builder.Services);
 
 var app = builder.Build();
 Services.MapGrpcServices(app);

@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ProductGrpc.Data.Context;
+﻿using ProductGrpc.Data.Context;
 using ProductGrpc.Infra.Repository.Includes;
 using ProductGrpc.Models;
 
