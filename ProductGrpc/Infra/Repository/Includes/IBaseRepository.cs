@@ -1,4 +1,4 @@
-﻿using ProductGrpc.Models.Includes;
+﻿using System.Linq.Expressions;
 
 namespace ProductGrpc.Infra.Repository.Includes
 {
@@ -8,7 +8,7 @@ namespace ProductGrpc.Infra.Repository.Includes
         Task<T> AddAsync(T item);
         Task<T> UpdateAsync(T item);
         Task DeleteAsync(T item);
-        Task<IQueryable<T>> GetAllAsync(Func<T, bool>? predicate = null, string[]? includes = null);
+        Task<IQueryable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null, string[]? includes = null);
         Task<T?> GetAsync(Key key);
     }
 }

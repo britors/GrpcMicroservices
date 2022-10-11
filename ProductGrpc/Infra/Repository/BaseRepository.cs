@@ -2,6 +2,7 @@
 using ProductGrpc.Data.Context;
 using ProductGrpc.Infra.Repository.Includes;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace ProductGrpc.Infra.Repository
 {
@@ -53,7 +54,7 @@ namespace ProductGrpc.Infra.Repository
         /// Retornar todos os registros da entidade
         /// </summary>
         /// <returns></returns>
-        public async Task<IQueryable<T>> GetAllAsync(Func<T, bool>? predicate = null, string[]? includes = null)
+        public async Task<IQueryable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null, string[]? includes = null)
         {
             var items = predicate != null ? _context.Set<T>().Where(predicate).AsQueryable() : _context.Set<T>().AsQueryable();
 

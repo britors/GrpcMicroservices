@@ -1,10 +1,9 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
+﻿using Grpc.Core;
 using ProductGrpc.Application.Includes;
-using ProductGrpc.Infra.Repository.Includes;
 using ProductGrpc.Models;
 using ProductGrpc.Models.Enums;
 using ProductGrpc.Protos;
+using System.Linq.Expressions;
 
 namespace ProductGrpc.Services
 {
@@ -55,8 +54,8 @@ namespace ProductGrpc.Services
             {
 
                 var product = await _productApplication.UpdateAsync<ProductModel, ProductUpdateRequest>(request);
-                
-                if(product == null)
+
+                if (product == null)
                     throw new RpcException(new Status(StatusCode.Internal, "Erro ao cadastrar o produto"));
 
                 return product;
@@ -208,17 +207,30 @@ namespace ProductGrpc.Services
         /// <returns></returns>
         private async Task<IEnumerable<Product>> GetProducts(ProductFilter filter)
         {
-            Func<Product, bool>? predicate = null;
-            
-            // TODO : Melhorar filtro
+            Expression<Func<Product, bool>>? predicate = null;
+
             if (!string.IsNullOrEmpty(filter.Name))
                 predicate = (x => x.Name == filter.Name);
 
             if (filter.Status > 0)
-                predicate = predicate == null ?  
-                    (x => x.Status.Equals((ProductStatus)filter.Status)) 
-                    : (x => x.Name == filter.Name && x.Status.Equals((ProductStatus)filter.Status));
+            {
+                Expression<Func<Product, bool>> statuFilter =
+                    (x => x.Status.Equals((ProductStatus)filter.Status));
 
+                if (predicate != null)
+                {
+                    var param = Expression.Parameter(typeof(Product), "x");
+
+                    var body = Expression.And(
+                        Expression.Invoke(predicate, param),
+                        Expression.Invoke(statuFilter, param)
+                    );
+                    predicate = Expression.Lambda<Func<Product, bool>>(body, param);
+                }
+                else
+                    predicate = statuFilter;
+
+            }
             var products = await _productApplication.GetAllAsync(predicate);
             return products;
         }

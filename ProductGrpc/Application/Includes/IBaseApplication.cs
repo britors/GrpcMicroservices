@@ -1,4 +1,6 @@
-﻿namespace ProductGrpc.Application.Includes
+﻿using System.Linq.Expressions;
+
+namespace ProductGrpc.Application.Includes
 {
     public interface IBaseApplication<TModel>
         where TModel : class
@@ -18,7 +20,7 @@
             where TResponse : class
             where TRequest : class;
 
-        Task<IQueryable<TModel>> GetAllAsync(Func<TModel, bool>? predicate = null, string[]? includes = null);
+        Task<IQueryable<TModel>> GetAllAsync(Expression<Func<TModel, bool>>? predicate = null, string[]? includes = null);
 
         TResponse? GetReturn<TResponse>(TModel model) where TResponse : class;
     }

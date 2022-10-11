@@ -1,5 +1,6 @@
 ﻿using ProductGrpc.Application.Includes;
 using ProductGrpc.Infra.Repository.Includes;
+using System.Linq.Expressions;
 
 namespace ProductGrpc.Application
 {
@@ -39,7 +40,7 @@ namespace ProductGrpc.Application
             await _baseRepository.DeleteAsync(model);
         }
 
-        public async Task<IQueryable<TModel>> GetAllAsync(Func<TModel, bool>? predicate = null, string[]? includes = null)
+        public async Task<IQueryable<TModel>> GetAllAsync(Expression<Func<TModel, bool>>? predicate = null, string[]? includes = null)
             => await _baseRepository.GetAllAsync(predicate, includes);
 
         public async Task<TResponse?> GetAsync<TResponse, TRequest>(TRequest request)
