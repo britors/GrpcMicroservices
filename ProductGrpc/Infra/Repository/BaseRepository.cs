@@ -1,17 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductGrpc.Data.Context;
 using ProductGrpc.Infra.Repository.Includes;
+using System.Linq;
 
 namespace ProductGrpc.Infra.Repository
 {
-    public class BaseRepository<T, Key> : IBaseRepository<T, Key> 
+    public class BaseRepository<T, Key> : IBaseRepository<T, Key>
         where T : class
     {
         private readonly ProductContext _context;
 
         public BaseRepository(ProductContext context) =>
             _context = context;
-        
+
         /// <summary>
         /// Criar registro
         /// </summary>
@@ -52,8 +53,14 @@ namespace ProductGrpc.Infra.Repository
         /// Retornar todos os registros da entidade
         /// </summary>
         /// <returns></returns>
-        public async Task<IQueryable<T>> GetAllAsync(){
-            var items = _context.Set<T>().AsQueryable();
+        public async Task<IQueryable<T>> GetAllAsync(Func<T, bool>? predicate = null, string[]? includes = null)
+        {
+            var items = predicate != null ? _context.Set<T>().Where(predicate).AsQueryable() : _context.Set<T>().AsQueryable();
+
+            if (includes != null && includes.Length > 0)
+                foreach (var include in includes)
+                    items = items.Include(include);
+
             return await Task.FromResult(items);
         }
 
@@ -62,7 +69,7 @@ namespace ProductGrpc.Infra.Repository
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public async Task<T?> GetAsync(Key key) 
+        public async Task<T?> GetAsync(Key key)
             => await _context
                     .Set<T>()
                     .FindAsync(key);
