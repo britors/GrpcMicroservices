@@ -4,7 +4,8 @@ using ProductGrpc.Infra.Repository.Includes;
 
 namespace ProductGrpc.Infra.Repository
 {
-    public class BaseRepository<T, Key> : IBaseRepository<T, Key> where T : class
+    public class BaseRepository<T, Key> : IBaseRepository<T, Key> 
+        where T : class
     {
         private readonly ProductContext _context;
 

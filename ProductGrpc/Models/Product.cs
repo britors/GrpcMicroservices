@@ -2,9 +2,8 @@
 
 namespace ProductGrpc.Models
 {
-    public class Product
+    public class Product: ModelBase
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public float Price { get; set; }

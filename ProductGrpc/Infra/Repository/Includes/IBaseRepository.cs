@@ -1,6 +1,9 @@
-﻿namespace ProductGrpc.Infra.Repository.Includes
+﻿using ProductGrpc.Models.Includes;
+
+namespace ProductGrpc.Infra.Repository.Includes
 {
-    public interface IBaseRepository<T, Key> where T : class
+    public interface IBaseRepository<T, Key> 
+        where T : class
     {
         Task<T?> GetAsync(Key key);
         Task<T> UpdateAsync(T item);

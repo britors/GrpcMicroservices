@@ -125,6 +125,7 @@ namespace ProductGrpc.Services
                     throw new RpcException(new Status(StatusCode.InvalidArgument, "Produto não encontrado"));
                 }
                 return BuildReturn(product);
+
             }
             catch (Exception e)
             {
@@ -133,7 +134,7 @@ namespace ProductGrpc.Services
             }
         }
 
-        public override async Task GetProductAsync( ProductIndexRequest request,
+        public override async Task GetProductAsync(ProductIndexRequest request,
                                                     IServerStreamWriter<ProductModel> responseStream,
                                                     ServerCallContext context)
         {
@@ -163,11 +164,11 @@ namespace ProductGrpc.Services
         /// <param name="context"></param>
         /// <returns></returns>
         /// <exception cref="RpcException"></exception>
-        public override async Task<ProductsResult> GetProducts(Empty request, ServerCallContext context)
+        public override async Task<ProductsResult> GetProducts(ProductFilter request, ServerCallContext context)
         {
             try
             {
-                var products = await GetProducts();
+                var products = await GetProducts(request);
                 var result = new ProductsResult();
                 foreach (var product in products)
                 {
@@ -190,13 +191,13 @@ namespace ProductGrpc.Services
         /// <param name="context"></param>
         /// <returns></returns>
         /// 
-        public override async Task GetProductsAsync(Empty request,
+        public override async Task GetProductsAsync(ProductFilter request,
                                                     IServerStreamWriter<ProductModel> responseStream,
                                                     ServerCallContext context)
         {
             try
             {
-                var products = await GetProducts();
+                var products = await GetProducts(request);
                 foreach (var product in products)
                 {
                     var model = BuildReturn(product);
@@ -210,8 +211,22 @@ namespace ProductGrpc.Services
             }
         }
 
-        private async Task<IEnumerable<Product>> GetProducts()
-            => await _productRepository.GetAllAsync();
+
+        /// <summary>
+        /// Buscar produto
+        /// </summary>
+        /// <returns></returns>
+        private async Task<IEnumerable<Product>> GetProducts(ProductFilter filter)
+        {
+            var products = await _productRepository.GetAllAsync();
+            if (!string.IsNullOrEmpty(filter.Name))
+                products = products.Where(p => p.Name == filter.Name);
+
+            if (filter.Status > 0)
+                products = products.Where(p => p.Status == (ProductStatus)filter.Status);
+
+            return products;
+        }
 
         /// <summary>
         /// Cria um retorno da chamada
@@ -222,7 +237,7 @@ namespace ProductGrpc.Services
         {
             return new ProductModel
             {
-                Id = product.Id.ToString(),
+                Id = product.Id.ToString().ToUpper(),
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
