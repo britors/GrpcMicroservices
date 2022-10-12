@@ -17,7 +17,7 @@ namespace ProductGrpc.Services
             where TRequest : class
             where TResponse : class
         {
-            var model = GetModel(request);
+            var model = await GetModel(request, CrudType.Insert);
             var result = await _baseRepository.AddAsync(model);
             return GetReturn<TResponse>(result);
         }
@@ -26,8 +26,16 @@ namespace ProductGrpc.Services
             where TRequest : class
             where TResponse : class
         {
-            var model = GetModel(request);
-            var result = await _baseRepository.UpdateAsync(model);
+            var model = await GetModel(request, CrudType.Update);
+            var key = GetKey(request);
+            var source = await _baseRepository.GetAsync(key);
+            if(source == null)
+            {
+                Exception exception = new("Produto não encontrado");
+                throw exception;
+            }
+
+            var result = await _baseRepository.UpdateAsync(model, source);
             return GetReturn<TResponse>(result);
         }
 
@@ -72,10 +80,16 @@ namespace ProductGrpc.Services
         protected virtual TKey GetKey<TRequest>(TRequest request) where TRequest : class
             => throw new NotImplementedException("Metodo GetKey não implementado");
 
-        protected virtual TModel GetModel<TRequest>(TRequest request) where TRequest : class
+        protected  virtual Task<TModel> GetModel<TRequest>(TRequest request, CrudType? type = null) where TRequest : class
             => throw new NotImplementedException("Metodo GetModel não implementado");
 
         public virtual TResponse? GetReturn<TResponse>(TModel model) where TResponse: class
             => throw new NotImplementedException("Metodo GetReturn não implementado");
+        
         }
+
+    public enum CrudType {
+        Insert,
+        Update,
+    }
 }

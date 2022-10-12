@@ -2,8 +2,8 @@
 {
     public enum ProductStatus
     {
-        INSTOCK = 0,
-        LOW = 1,
-        NONE = 2,
+        INSTOCK = 1,
+        LOW = 2,
+        NONE = 3,
     }
 }

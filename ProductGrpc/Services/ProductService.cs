@@ -11,7 +11,11 @@ namespace ProductGrpc.Services
 {
     public class ProductService : BaseService<Product, Guid>, IProductService
     {
-        public ProductService(IProductRepository productRepository) : base(productRepository) { }
+        private readonly IProductRepository _productRepository;
+        public ProductService(IProductRepository productRepository) : base(productRepository)
+        {
+            _productRepository = productRepository;
+        }
 
         protected override Guid GetKey<TRequest>(TRequest request)
         {
@@ -39,23 +43,49 @@ namespace ProductGrpc.Services
             return response as TResponse;
         }
 
-        protected override Product GetModel<TRequest>(TRequest request)
+        protected override async Task<Product> GetModel<TRequest>(TRequest request, CrudType? type = null)
         {
             var id = GetKey(request);
             var name = GetValueInRequest(request, "Name") as string;
             var description = GetValueInRequest(request, "Description") as string;
-            var status = GetValueInRequest(request, "Status") as string;
-            var price = GetValueInRequest(request, "Price") as string;
-            var createAt = GetValueInRequest(request, "CreatedAt") as string;
+            var status = GetValueInRequest(request, "Status") as int?;
+            var price = GetValueInRequest(request, "Price") as float?;
+
+            DateTime createAt = new();
+            DateTime? updatedAt = null;
+
+            if (type != null)
+            {
+                switch (type)
+                {
+                    case CrudType.Insert:
+                        createAt = DateTime.UtcNow;
+                        updatedAt = null;
+                        break;
+                    case CrudType.Update:
+                        var product = await _productRepository.GetAsync(id);
+                        
+                        if (product == null)
+                        {
+                            Exception exception = new("Produto não encontrado");
+                            throw exception;
+                        }
+
+                        createAt = product.CreatedAt;
+                        updatedAt = DateTime.UtcNow;
+                        break;
+                }
+            }
 
             return new Product
             {
                 Id = id,
                 Name = name ?? "",
                 Description = description ?? "",
-                Status = status != null ? (ProductStatus)Convert.ToInt32(status) : ProductStatus.NONE,
-                Price = price != null ? float.Parse(price) : 0,
-                CreatedAt = createAt != null ? Convert.ToDateTime(GetValueInRequest(request, "CreatedAt")) : DateTime.UtcNow
+                Status = status != null ? (ProductStatus)status : ProductStatus.NONE,
+                Price = price ?? 0,
+                CreatedAt = createAt,
+                UpdateAt = updatedAt
             };
         }
 

@@ -31,9 +31,9 @@ namespace ProductGrpc.Infra.Repository
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public async Task<T> UpdateAsync(T item)
+        public async Task<T> UpdateAsync(T item, T source)
         {
-            _context.Entry(item).State = EntityState.Modified;
+            _context.Entry(source).CurrentValues.SetValues(item);
             await _context.SaveChangesAsync();
             return await Task.FromResult(item);
         }

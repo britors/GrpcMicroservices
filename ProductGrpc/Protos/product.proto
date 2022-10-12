@@ -1,9 +1,6 @@
 syntax = "proto3";
 option csharp_namespace = "ProductGrpc.Protos";
-
 import "google/protobuf/timestamp.proto";
-
-
 package productGrpc;
 
 service ProductGrpcCommunicator {
@@ -14,7 +11,6 @@ service ProductGrpcCommunicator {
 	rpc GetProductAsync(ProductIndexRequest) returns (stream ProductModel);
 	rpc GetProducts(ProductFilter) returns (ProductsResult);
 	rpc GetProductsAsync(ProductFilter) returns (stream ProductModel);
-
 }
 
 message ProductCreateRequest {
@@ -28,6 +24,7 @@ message ProductUpdateRequest {
 	string name = 2;
 	string description = 3;
 	float price = 4;
+	int32 status = 5;
 }
 
 message ProductModel {

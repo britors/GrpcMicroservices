@@ -12,8 +12,8 @@ using ProductGrpc.Data.Context;
 namespace ProductGrpc.Migrations
 {
     [DbContext(typeof(ProductContext))]
-    [Migration("20221006225245_InitializeDatabase")]
-    partial class InitializeDatabase
+    [Migration("20221012130124_CreateDatabase")]
+    partial class CreateDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -46,6 +46,9 @@ namespace ProductGrpc.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
