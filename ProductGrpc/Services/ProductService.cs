@@ -1,211 +1,65 @@
-﻿using Grpc.Core;
-using ProductGrpc.Application.Includes;
+﻿using Google.Protobuf.WellKnownTypes;
+using ProductGrpc.Services.Includes;
+using ProductGrpc.Infra.Repository.Includes;
 using ProductGrpc.Models;
 using ProductGrpc.Models.Enums;
 using ProductGrpc.Protos;
+using ProductGrpc.Helpers;
 using System.Linq.Expressions;
 
 namespace ProductGrpc.Services
 {
-    public class ProductService : ProductGrpcCommunicator.ProductGrpcCommunicatorBase
+    public class ProductService : BaseService<Product, Guid>, IProductService
     {
-        private readonly IProductApplication _productApplication;
-        public ProductService(IProductApplication productApplication)
-        => _productApplication = productApplication;
+        public ProductService(IProductRepository productRepository) : base(productRepository) { }
 
-
-
-        /// <summary>
-        /// Criar novo Produto
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        /// <exception cref="RpcException"></exception>
-        public override async Task<ProductModel> Create(ProductCreateRequest request, ServerCallContext context)
+        protected override Guid GetKey<TRequest>(TRequest request)
         {
-            try
-            {
+            var id = GetValueInRequest(request, "Id") as string;
 
-                var newProduct = await _productApplication.AddAsync<ProductModel, ProductCreateRequest>(request);
-
-                if (newProduct == null)
-                    throw new RpcException(new Status(StatusCode.Internal, "Erro ao cadastrar o produto"));
-
-                return newProduct;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new RpcException(new Status(StatusCode.Internal, e.Message));
-            }
-        }
-
-        /// <summary>
-        /// Atualizar Produto
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        /// <exception cref="RpcException"></exception>
-        public override async Task<ProductModel> Update(ProductUpdateRequest request, ServerCallContext context)
-        {
-            try
-            {
-
-                var product = await _productApplication.UpdateAsync<ProductModel, ProductUpdateRequest>(request);
-
-                if (product == null)
-                    throw new RpcException(new Status(StatusCode.Internal, "Erro ao cadastrar o produto"));
-
-                return product;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new RpcException(new Status(StatusCode.Internal, e.Message));
-            }
-        }
-
-        /// <summary>
-        /// Excluir um produto
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        /// <exception cref="RpcException"></exception>
-        public override async Task<ProductDeleted> Delete(ProductIndexRequest request, ServerCallContext context)
-        {
-            try
-            {
-                await _productApplication.DeleteAsync(request);
-                return new ProductDeleted
-                {
-                    Id = request.Id
-                };
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new RpcException(new Status(StatusCode.Internal, e.Message));
-            }
-        }
-
-        /// <summary>
-        /// Buscar produto pela chave primaria
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        /// <exception cref="RpcException"></exception>
-        public override async Task<ProductModel> GetProduct(ProductIndexRequest request, ServerCallContext context)
-        {
-            try
-            {
-                var model = await _productApplication.GetAsync<ProductModel, ProductIndexRequest>(request);
-
-                if (model == null)
-                    throw new RpcException(new Status(StatusCode.Internal, "Product não encontado"));
-
-                return model;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new RpcException(new Status(StatusCode.Internal, e.Message));
-            }
-        }
-
-        /// <summary>
-        /// Buscar produto (async)
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="responseStream"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        /// <exception cref="RpcException"></exception>
-        public override async Task GetProductAsync(ProductIndexRequest request,
-                                                    IServerStreamWriter<ProductModel> responseStream,
-                                                    ServerCallContext context)
-        {
-            try
-            {
-                var model = await _productApplication.GetAsync<ProductModel, ProductIndexRequest>(request);
-
-                if (model == null)
-                    throw new RpcException(new Status(StatusCode.Internal, "Product não encontado"));
-
-                await responseStream.WriteAsync(model);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new RpcException(new Status(StatusCode.Internal, e.Message));
-            }
+            if (string.IsNullOrEmpty(id))
+                return Guid.Empty;
+            else
+                return new Guid(id);
 
         }
 
-        /// <summary>
-        /// Retornar lista de produtos (sync)
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        /// <exception cref="RpcException"></exception>
-        public override async Task<ProductsResult> GetProducts(ProductFilter request, ServerCallContext context)
+        public override TResponse? GetReturn<TResponse>(Product model)
+            where TResponse : class
         {
-            try
+            var response = new ProductModel
             {
-                var products = await GetProducts(request);
-                var result = new ProductsResult();
-                foreach (var product in products)
-                {
-                    var model = _productApplication.GetReturn<ProductModel>(product);
-                    result.Products.Add(model);
-                }
-                return result;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new RpcException(new Status(StatusCode.Internal, e.Message));
-            }
+                Id = model.Id.ToString().ToUpper(),
+                Name = model.Name,
+                Description = model.Description,
+                Price = model.Price,
+                Status = (int)model.Status,
+                CreatedAt = Timestamp.FromDateTime(model.CreatedAt.ToUniversalTime()),
+            };
+            return response as TResponse;
         }
 
-        /// <summary>
-        /// Retorna uma lista de produtos (async)
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        /// 
-        public override async Task GetProductsAsync(ProductFilter request,
-                                                    IServerStreamWriter<ProductModel> responseStream,
-                                                    ServerCallContext context)
+        protected override Product GetModel<TRequest>(TRequest request)
         {
-            try
+            var id = GetKey(request);
+            var name = GetValueInRequest(request, "Name") as string;
+            var description = GetValueInRequest(request, "Description") as string;
+            var status = GetValueInRequest(request, "Status") as string;
+            var price = GetValueInRequest(request, "Price") as string;
+            var createAt = GetValueInRequest(request, "CreatedAt") as string;
+
+            return new Product
             {
-                var products = await GetProducts(request);
-                foreach (var product in products)
-                {
-                    var model = _productApplication.GetReturn<ProductModel>(product);
-                    if (model != null)
-                        await responseStream.WriteAsync(model);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new RpcException(new Status(StatusCode.Internal, e.Message));
-            }
+                Id = id,
+                Name = name ?? "",
+                Description = description ?? "",
+                Status = status != null ? (ProductStatus)Convert.ToInt32(status) : ProductStatus.NONE,
+                Price = price != null ? float.Parse(price) : 0,
+                CreatedAt = createAt != null ? Convert.ToDateTime(GetValueInRequest(request, "CreatedAt")) : DateTime.UtcNow
+            };
         }
 
-
-        /// <summary>
-        /// Buscar produto
-        /// </summary>
-        /// <returns></returns>
-        private async Task<IEnumerable<Product>> GetProducts(ProductFilter filter)
+        public async Task<IEnumerable<Product>> GetProducts(ProductFilter filter)
         {
             Expression<Func<Product, bool>>? predicate = null;
 
@@ -216,24 +70,12 @@ namespace ProductGrpc.Services
             {
                 Expression<Func<Product, bool>> statuFilter =
                     (x => x.Status.Equals((ProductStatus)filter.Status));
-
-                if (predicate != null)
-                {
-                    var param = Expression.Parameter(typeof(Product), "x");
-
-                    var body = Expression.And(
-                        Expression.Invoke(predicate, param),
-                        Expression.Invoke(statuFilter, param)
-                    );
-                    predicate = Expression.Lambda<Func<Product, bool>>(body, param);
-                }
-                else
-                    predicate = statuFilter;
-
+                predicate = predicate == null
+                                ? statuFilter
+                                : FilterHelper<Product>.UnionWithAnd(predicate, statuFilter);
             }
-            var products = await _productApplication.GetAllAsync(predicate);
-            return products;
-        }
 
+            return await GetAllAsync(predicate);
+        }
     }
 }

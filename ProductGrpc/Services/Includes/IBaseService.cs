@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 
-namespace ProductGrpc.Application.Includes
+namespace ProductGrpc.Services.Includes
 {
-    public interface IBaseApplication<TModel>
+    public interface IBaseService<TModel>
         where TModel : class
     {
         Task<TResponse?> AddAsync<TResponse,TRequest>(TRequest request)

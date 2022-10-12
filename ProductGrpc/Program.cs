@@ -9,10 +9,10 @@ builder.Services.AddGrpcReflection();
 builder.Services.AddDbContext<ProductContext>();
 
 Repositories.MakeInjectDependencies(builder.Services);
-Applications.MakeInjectDependencies(builder.Services);
+Services.MakeInjectDependencies(builder.Services);
 
 var app = builder.Build();
-Services.MapGrpcServices(app);
+GrpcServices.MapGrpcServices(app);
 
 app.MapGet("/", () => "Product Microservice");
 

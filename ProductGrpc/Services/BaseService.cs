@@ -1,14 +1,14 @@
-﻿using ProductGrpc.Application.Includes;
+﻿using ProductGrpc.Services.Includes;
 using ProductGrpc.Infra.Repository.Includes;
 using System.Linq.Expressions;
 
-namespace ProductGrpc.Application
+namespace ProductGrpc.Services
 {
-    public abstract class BaseApplication<TModel, TKey> : IBaseApplication<TModel>
+    public abstract class BaseService<TModel, TKey> : IBaseService<TModel>
         where TModel : class
     {
         private readonly IBaseRepository<TModel, TKey> _baseRepository;
-        protected BaseApplication(IBaseRepository<TModel, TKey> baseRepository)
+        protected BaseService(IBaseRepository<TModel, TKey> baseRepository)
         {
             _baseRepository = baseRepository;
         }
