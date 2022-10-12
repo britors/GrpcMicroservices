@@ -13,7 +13,7 @@ namespace ProductGrpc.Services
             _baseRepository = baseRepository;
         }
 
-        public async Task<TResponse?> AddAsync<TResponse, TRequest>(TRequest request) 
+        public async Task<TResponse?> AddAsync<TResponse, TRequest>(TRequest request)
             where TRequest : class
             where TResponse : class
         {
@@ -22,14 +22,14 @@ namespace ProductGrpc.Services
             return GetReturn<TResponse>(result);
         }
 
-        public async Task<TResponse?> UpdateAsync<TResponse, TRequest>(TRequest request) 
+        public async Task<TResponse?> UpdateAsync<TResponse, TRequest>(TRequest request)
             where TRequest : class
             where TResponse : class
         {
             var model = await GetModel(request, CrudType.Update);
             var key = GetKey(request);
             var source = await _baseRepository.GetAsync(key);
-            if(source == null)
+            if (source == null)
             {
                 Exception exception = new("Produto não encontrado");
                 throw exception;
@@ -48,7 +48,8 @@ namespace ProductGrpc.Services
             await _baseRepository.DeleteAsync(model);
         }
 
-        public async Task<IQueryable<TModel>> GetAllAsync(Expression<Func<TModel, bool>>? predicate = null, string[]? includes = null)
+        public async Task<IQueryable<TModel>> GetAllAsync(Expression<Func<TModel, bool>>? predicate = null,
+                                                                                   string[]? includes = null)
             => await _baseRepository.GetAllAsync(predicate, includes);
 
         public async Task<TResponse?> GetAsync<TResponse, TRequest>(TRequest request)
@@ -59,7 +60,7 @@ namespace ProductGrpc.Services
             var model = await _baseRepository.GetAsync(key);
             if (model == null)
                 throw new ArgumentNullException(GetType().Name);
-            
+
             return GetReturn<TResponse>(model);
         }
 
@@ -80,15 +81,17 @@ namespace ProductGrpc.Services
         protected virtual TKey GetKey<TRequest>(TRequest request) where TRequest : class
             => throw new NotImplementedException("Metodo GetKey não implementado");
 
-        protected  virtual Task<TModel> GetModel<TRequest>(TRequest request, CrudType? type = null) where TRequest : class
+        protected virtual Task<TModel> GetModel<TRequest>(TRequest request, CrudType? type = null) 
+            where TRequest : class
             => throw new NotImplementedException("Metodo GetModel não implementado");
 
-        public virtual TResponse? GetReturn<TResponse>(TModel model) where TResponse: class
+        public virtual TResponse? GetReturn<TResponse>(TModel model) where TResponse : class
             => throw new NotImplementedException("Metodo GetReturn não implementado");
-        
-        }
 
-    public enum CrudType {
+    }
+
+    public enum CrudType
+    {
         Insert,
         Update,
     }

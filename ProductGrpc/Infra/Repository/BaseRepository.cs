@@ -53,7 +53,8 @@ namespace ProductGrpc.Infra.Repository
         /// Retornar todos os registros da entidade
         /// </summary>
         /// <returns></returns>
-        public async Task<IQueryable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null, string[]? includes = null)
+        public async Task<IQueryable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null,   
+                                                                    string[]? includes = null)
         {
             var items = predicate != null 
                 ? _context.Set<T>().Where(predicate).AsQueryable() 

@@ -20,7 +20,8 @@ namespace ProductGrpc.Services.Includes
             where TResponse : class
             where TRequest : class;
 
-        Task<IQueryable<TModel>> GetAllAsync(Expression<Func<TModel, bool>>? predicate = null, string[]? includes = null);
+        Task<IQueryable<TModel>> GetAllAsync(Expression<Func<TModel, bool>>? predicate = null, 
+                                                                    string[]? includes = null);
 
         TResponse? GetReturn<TResponse>(TModel model) where TResponse : class;
     }

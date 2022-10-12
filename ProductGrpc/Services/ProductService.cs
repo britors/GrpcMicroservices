@@ -6,7 +6,6 @@ using ProductGrpc.Models.Enums;
 using ProductGrpc.Protos;
 using ProductGrpc.Helpers;
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Server.IISIntegration;
 
 namespace ProductGrpc.Services
 {
@@ -24,8 +23,8 @@ namespace ProductGrpc.Services
 
             if (string.IsNullOrEmpty(id))
                 return Guid.Empty;
-            else
-                return new Guid(id);
+
+            return new Guid(id);
 
         }
 
@@ -39,7 +38,9 @@ namespace ProductGrpc.Services
                 Name = model.Name,
                 Description = model.Description,
                 Price = model.Price,
-                Status = status != null ? new StatusResult { Id = status.Id.ToString(), Name = status.Name } : null,
+                Status = status != null ?
+                                    StatusModelToResult(status) :
+                                    null,
                 StatusId = model.StatusId,
                 CreatedAt = Timestamp.FromDateTime(model.CreatedAt.ToUniversalTime()),
             };
@@ -113,7 +114,8 @@ namespace ProductGrpc.Services
             return await GetAllAsync(predicate, new[] { "Status" });
         }
 
-        private static Dictionary<string, Expression<Func<Product, bool>>> ReturnProductFilter(ProductFilter filter)
+        private static Dictionary<string, Expression<Func<Product, bool>>>
+            ReturnProductFilter(ProductFilter filter)
         {
             var queries = new Dictionary<string, Expression<Func<Product, bool>>>
             {
@@ -123,5 +125,13 @@ namespace ProductGrpc.Services
 
             return queries;
         }
+
+        private static StatusResult StatusModelToResult(ProductStatus status)
+            => new()
+            {
+                Id = status.Id.ToString(),
+                Name = status.Name
+            };
+
     }
 }
