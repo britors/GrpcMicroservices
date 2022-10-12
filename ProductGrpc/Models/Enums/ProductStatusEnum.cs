@@ -1,6 +1,6 @@
 ﻿namespace ProductGrpc.Models.Enums
 {
-    public enum ProductStatus
+    public enum ProductStatusEnum
     {
         INSTOCK = 1,
         LOW = 2,

@@ -24,7 +24,8 @@ message ProductUpdateRequest {
 	string name = 2;
 	string description = 3;
 	float price = 4;
-	int32 status = 5;
+	int32 statusId = 5;
+	bool isDeleted = 6;
 }
 
 message ProductModel {
@@ -32,8 +33,15 @@ message ProductModel {
 	string name = 2;
 	string description = 3;
 	float price = 4;
-	int32 status = 5;
-	google.protobuf.Timestamp createdAt = 6;
+	int32 statusId = 5;
+	StatusResult status = 6;
+	google.protobuf.Timestamp createdAt = 7;
+	google.protobuf.Timestamp updatedAtAt = 8;
+}
+
+message StatusResult {
+	string id = 1;
+	string name = 2;
 }
 
 message ProductsResult {
@@ -50,5 +58,5 @@ message ProductIndexRequest {
 
 message ProductFilter {
 	optional string name = 1;
-	int32 status = 2;
+	int32 statusId = 2;
 }

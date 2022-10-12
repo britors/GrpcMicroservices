@@ -6,6 +6,7 @@ using ProductGrpc.Models.Enums;
 using ProductGrpc.Protos;
 using ProductGrpc.Helpers;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Server.IISIntegration;
 
 namespace ProductGrpc.Services
 {
@@ -31,13 +32,15 @@ namespace ProductGrpc.Services
         public override TResponse? GetReturn<TResponse>(Product model)
             where TResponse : class
         {
+            var status = model.Status;
             var response = new ProductModel
             {
                 Id = model.Id.ToString().ToUpper(),
                 Name = model.Name,
                 Description = model.Description,
                 Price = model.Price,
-                Status = (int)model.Status,
+                Status = status != null ? new StatusResult { Id = status.Id.ToString(), Name = status.Name } : null,
+                StatusId = model.StatusId,
                 CreatedAt = Timestamp.FromDateTime(model.CreatedAt.ToUniversalTime()),
             };
             return response as TResponse;
@@ -48,8 +51,9 @@ namespace ProductGrpc.Services
             var id = GetKey(request);
             var name = GetValueInRequest(request, "Name") as string;
             var description = GetValueInRequest(request, "Description") as string;
-            var status = GetValueInRequest(request, "Status") as int?;
+            var status = GetValueInRequest(request, "StatusId") as int?;
             var price = GetValueInRequest(request, "Price") as float?;
+            var isDeleted = GetValueInRequest(request, "IsDeleted") as bool?;
 
             DateTime createAt = new();
             DateTime? updatedAt = null;
@@ -60,11 +64,12 @@ namespace ProductGrpc.Services
                 {
                     case CrudType.Insert:
                         createAt = DateTime.UtcNow;
+                        isDeleted = false;
                         updatedAt = null;
                         break;
                     case CrudType.Update:
                         var product = await _productRepository.GetAsync(id);
-                        
+
                         if (product == null)
                         {
                             Exception exception = new("Produto não encontrado");
@@ -72,6 +77,8 @@ namespace ProductGrpc.Services
                         }
 
                         createAt = product.CreatedAt;
+                        status = status == 0 ? product.StatusId : status;
+                        isDeleted = isDeleted == null ? product.IsDeleted : isDeleted;
                         updatedAt = DateTime.UtcNow;
                         break;
                 }
@@ -82,8 +89,9 @@ namespace ProductGrpc.Services
                 Id = id,
                 Name = name ?? "",
                 Description = description ?? "",
-                Status = status != null ? (ProductStatus)status : ProductStatus.NONE,
+                StatusId = status ?? (int)ProductStatusEnum.NONE,
                 Price = price ?? 0,
+                IsDeleted = isDeleted ?? true,
                 CreatedAt = createAt,
                 UpdateAt = updatedAt
             };
@@ -91,29 +99,26 @@ namespace ProductGrpc.Services
 
         public async Task<IEnumerable<Product>> GetProducts(ProductFilter filter)
         {
-            var query = MakeProductQueries(filter);
+            var filters = ReturnProductFilter(filter);
 
-
-            Expression<Func<Product, bool>>? predicate = null;
+            Expression<Func<Product, bool>> predicate = (x => x.IsDeleted.Equals(false));
 
             if (!string.IsNullOrEmpty(filter.Name))
-                predicate = query["Name"];
+                predicate = FilterHelper<Product>.UnionWithAnd(predicate, filters["Name"]);
 
-            if (filter.Status > 0)
-                predicate = predicate == null
-                                ? query["Status"]
-                                : FilterHelper<Product>.UnionWithAnd(predicate, query["Status"]);
+            if (filter.StatusId > 0)
+                predicate = FilterHelper<Product>.UnionWithAnd(predicate, filters["StatusId"]);
 
 
-            return await GetAllAsync(predicate);
+            return await GetAllAsync(predicate, new[] { "Status" });
         }
 
-        private static Dictionary<string, Expression<Func<Product, bool>>> MakeProductQueries(ProductFilter filter)
+        private static Dictionary<string, Expression<Func<Product, bool>>> ReturnProductFilter(ProductFilter filter)
         {
             var queries = new Dictionary<string, Expression<Func<Product, bool>>>
             {
                 { "Name", (x => x.Name == filter.Name) },
-                { "Status", (x => x.Status.Equals((ProductStatus)filter.Status)) },
+                { "StatusId", (x => x.StatusId.Equals(filter.StatusId)) },
             };
 
             return queries;

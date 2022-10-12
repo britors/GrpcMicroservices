@@ -2,9 +2,10 @@
 
 namespace ProductGrpc.Models
 {
-    public class ModelBase: IModel
+    public class ModelBase<TKey>: IModel
     {
-        public Guid Id { get; set; }
+        public TKey Id { get; set; }
+        public bool IsDeleted { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdateAt { get; set; }
     }

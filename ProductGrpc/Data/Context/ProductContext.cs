@@ -20,6 +20,6 @@ namespace ProductGrpc.Data.Context
         }
 
         public DbSet<Product> Products { get; set; }
-
+        public DbSet<ProductStatus> ProductStatuses { get; set; }
     }
 }
