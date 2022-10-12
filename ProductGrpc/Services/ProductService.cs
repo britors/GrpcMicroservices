@@ -61,22 +61,32 @@ namespace ProductGrpc.Services
 
         public async Task<IEnumerable<Product>> GetProducts(ProductFilter filter)
         {
+            var query = MakeProductQueries(filter);
+
+
             Expression<Func<Product, bool>>? predicate = null;
 
             if (!string.IsNullOrEmpty(filter.Name))
-                predicate = (x => x.Name == filter.Name);
+                predicate = query["Name"];
 
             if (filter.Status > 0)
-            {
-                Expression<Func<Product, bool>> statuFilter =
-                    (x => x.Status.Equals((ProductStatus)filter.Status));
-
                 predicate = predicate == null
-                                ? statuFilter
-                                : FilterHelper<Product>.UnionWithAnd(predicate, statuFilter);
-            }
+                                ? query["Status"]
+                                : FilterHelper<Product>.UnionWithAnd(predicate, query["Status"]);
+
 
             return await GetAllAsync(predicate);
+        }
+
+        private static Dictionary<string, Expression<Func<Product, bool>>> MakeProductQueries(ProductFilter filter)
+        {
+            var queries = new Dictionary<string, Expression<Func<Product, bool>>>
+            {
+                { "Name", (x => x.Name == filter.Name) },
+                { "Status", (x => x.Status.Equals((ProductStatus)filter.Status)) },
+            };
+
+            return queries;
         }
     }
 }
