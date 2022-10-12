@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductGrpc.Data.Context;
 using ProductGrpc.Infra.Repository.Includes;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace ProductGrpc.Infra.Repository
@@ -56,7 +55,9 @@ namespace ProductGrpc.Infra.Repository
         /// <returns></returns>
         public async Task<IQueryable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null, string[]? includes = null)
         {
-            var items = predicate != null ? _context.Set<T>().Where(predicate).AsQueryable() : _context.Set<T>().AsQueryable();
+            var items = predicate != null 
+                ? _context.Set<T>().Where(predicate).AsQueryable() 
+                : _context.Set<T>().AsQueryable();
 
             if (includes != null && includes.Length > 0)
                 foreach (var include in includes)

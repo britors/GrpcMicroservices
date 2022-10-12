@@ -70,6 +70,7 @@ namespace ProductGrpc.Services
             {
                 Expression<Func<Product, bool>> statuFilter =
                     (x => x.Status.Equals((ProductStatus)filter.Status));
+
                 predicate = predicate == null
                                 ? statuFilter
                                 : FilterHelper<Product>.UnionWithAnd(predicate, statuFilter);
