@@ -8,7 +8,6 @@ service ProductGrpcCommunicator {
 	rpc Create(ProductCreateRequest) returns (ProductModel);
 	rpc Update(ProductUpdateRequest) returns (ProductModel);
 	rpc Delete(ProductIndexRequest)	returns (google.protobuf.Empty);
-	rpc SetAsDeleted(ProductIndexRequest) returns (google.protobuf.Empty);
 	rpc UndoDeleted(ProductIndexRequest) returns (google.protobuf.Empty);
 	rpc Active(ProductIndexRequest)	returns (google.protobuf.Empty);
 	rpc Inactive(ProductIndexRequest)	returns (google.protobuf.Empty);

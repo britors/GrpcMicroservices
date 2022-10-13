@@ -71,7 +71,7 @@ namespace ProductGrpc.GrpcServices
         /// <returns></returns>
         public override async Task<Empty> Active(ProductIndexRequest request, ServerCallContext context)
         {
-            await _productService.ChangeStatus(request, 3);
+            await _productService.ChangeStatus(request, 1);
             return new Empty();
         }
 
@@ -83,7 +83,7 @@ namespace ProductGrpc.GrpcServices
         /// <returns></returns>
         public override async Task<Empty> Inactive(ProductIndexRequest request, ServerCallContext context)
         {
-            await _productService.ChangeStatus(request, 1);
+            await _productService.ChangeStatus(request, 3);
             return new Empty();
         }
 
@@ -98,7 +98,7 @@ namespace ProductGrpc.GrpcServices
         {
             try
             {
-                await _productService.DeleteAsync(request);
+                await _productService.ChangeIdDeleted(request, true);
                 return new Empty();
             }
             catch (Exception e)
@@ -217,17 +217,6 @@ namespace ProductGrpc.GrpcServices
             }
         }
 
-        /// <summary>
-        /// Marcar produto como deletado
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public override async Task<Empty> SetAsDeleted(ProductIndexRequest request, ServerCallContext context)
-        {
-            await _productService.ChangeIdDeleted(request, true);
-            return new Empty();
-        }
 
         /// <summary>
         /// Desmarcar produto como deletado
