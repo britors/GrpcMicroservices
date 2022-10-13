@@ -1,6 +1,7 @@
 ﻿using Grpc.Core;
 using ProductGrpc.Services.Includes;
 using ProductGrpc.Protos;
+using Google.Protobuf.WellKnownTypes;
 
 namespace ProductGrpc.GrpcServices
 {
@@ -63,21 +64,42 @@ namespace ProductGrpc.GrpcServices
         }
 
         /// <summary>
+        /// Setar produto como Ativo (Possue Estoque)
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override async Task<Empty> Active(ProductIndexRequest request, ServerCallContext context)
+        {
+            await _productService.ChangeStatus(request, 3);
+            return new Empty();
+        }
+
+        /// <summary>
+        /// Setar produto como Inativo (Sem Estoque)
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override async Task<Empty> Inactive(ProductIndexRequest request, ServerCallContext context)
+        {
+            await _productService.ChangeStatus(request, 1);
+            return new Empty();
+        }
+
+        /// <summary>
         /// Excluir um produto
         /// </summary>
         /// <param name="request"></param>
         /// <param name="context"></param>
         /// <returns></returns>
         /// <exception cref="RpcException"></exception>
-        public override async Task<ProductDeleted> Delete(ProductIndexRequest request, ServerCallContext context)
+        public override async Task<Empty> Delete(ProductIndexRequest request, ServerCallContext context)
         {
             try
             {
                 await _productService.DeleteAsync(request);
-                return new ProductDeleted
-                {
-                    Id = request.Id
-                };
+                return new Empty();
             }
             catch (Exception e)
             {
@@ -193,6 +215,30 @@ namespace ProductGrpc.GrpcServices
                 Console.WriteLine(e);
                 throw new RpcException(new Status(StatusCode.Internal, e.Message));
             }
+        }
+
+        /// <summary>
+        /// Marcar produto como deletado
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override async Task<Empty> SetAsDeleted(ProductIndexRequest request, ServerCallContext context)
+        {
+            await _productService.ChangeIdDeleted(request, true);
+            return new Empty();
+        }
+
+        /// <summary>
+        /// Desmarcar produto como deletado
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override  async Task<Empty> UndoDeleted(ProductIndexRequest request, ServerCallContext context)
+        {
+            await _productService.ChangeIdDeleted(request, false);
+            return new Empty();
         }
     }
 }

@@ -1,12 +1,17 @@
 syntax = "proto3";
 option csharp_namespace = "ProductGrpc.Protos";
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 package productGrpc;
 
 service ProductGrpcCommunicator {
 	rpc Create(ProductCreateRequest) returns (ProductModel);
 	rpc Update(ProductUpdateRequest) returns (ProductModel);
-	rpc Delete(ProductIndexRequest)	returns (ProductDeleted);
+	rpc Delete(ProductIndexRequest)	returns (google.protobuf.Empty);
+	rpc SetAsDeleted(ProductIndexRequest) returns (google.protobuf.Empty);
+	rpc UndoDeleted(ProductIndexRequest) returns (google.protobuf.Empty);
+	rpc Active(ProductIndexRequest)	returns (google.protobuf.Empty);
+	rpc Inactive(ProductIndexRequest)	returns (google.protobuf.Empty);
 	rpc GetProduct(ProductIndexRequest)	returns (ProductModel);
 	rpc GetProductAsync(ProductIndexRequest) returns (stream ProductModel);
 	rpc GetProducts(ProductFilter) returns (ProductsResult);
@@ -46,10 +51,6 @@ message StatusResult {
 
 message ProductsResult {
 	repeated ProductModel products = 1;
-}
-
-message ProductDeleted {
-	string id = 1;
 }
 
 message ProductIndexRequest {

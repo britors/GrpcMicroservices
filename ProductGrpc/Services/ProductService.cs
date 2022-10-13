@@ -6,6 +6,7 @@ using ProductGrpc.Models.Enums;
 using ProductGrpc.Protos;
 using ProductGrpc.Helpers;
 using System.Linq.Expressions;
+using Grpc.Core;
 
 namespace ProductGrpc.Services
 {
@@ -17,6 +18,36 @@ namespace ProductGrpc.Services
             _productRepository = productRepository;
         }
 
+        public async Task ChangeStatus(ProductIndexRequest request, int statusId)
+        {
+            var productId = GetKey(request);
+            var product = await _productRepository.GetAsync(productId);
+            var productUpdated = product;
+
+            if (product == null || productUpdated == null)
+            {
+                Exception exception = new("Produto não encontrado");
+                throw exception;
+            }
+            productUpdated.StatusId = statusId;
+            productUpdated.UpdateAt = DateTime.UtcNow;
+            await _productRepository.UpdateAsync(productUpdated, product);
+        }
+        public async Task ChangeIdDeleted(ProductIndexRequest request, bool isDeleted)
+        {
+            var productId = GetKey(request);
+            var product = await _productRepository.GetAsync(productId);
+            var productUpdated = product;
+
+            if (product == null || productUpdated == null)
+            {
+                Exception exception = new("Produto não encontrado");
+                throw exception;
+            }
+            productUpdated.IsDeleted = isDeleted;
+            productUpdated.UpdateAt = DateTime.UtcNow;
+            await _productRepository.UpdateAsync(productUpdated, product);
+        }
         protected override Guid GetKey<TRequest>(TRequest request)
         {
             var id = GetValueInRequest(request, "Id") as string;
@@ -132,6 +163,7 @@ namespace ProductGrpc.Services
                 Id = status.Id.ToString(),
                 Name = status.Name
             };
+
 
     }
 }
