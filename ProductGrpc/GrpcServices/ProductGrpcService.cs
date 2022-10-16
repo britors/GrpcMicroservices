@@ -25,7 +25,7 @@ namespace ProductGrpc.GrpcServices
 
                 var newProduct = await _productService.AddAsync<ProductModel, ProductCreateRequest>(request);
 
-                if (newProduct == null)
+                if (newProduct is null)
                     throw new RpcException(new Status(StatusCode.Internal, "Erro ao cadastrar o produto"));
 
                 return newProduct;
@@ -51,7 +51,7 @@ namespace ProductGrpc.GrpcServices
 
                 var product = await _productService.UpdateAsync<ProductModel, ProductUpdateRequest>(request);
 
-                if (product == null)
+                if (product is null)
                     throw new RpcException(new Status(StatusCode.Internal, "Erro ao cadastrar o produto"));
 
                 return product;
@@ -98,7 +98,7 @@ namespace ProductGrpc.GrpcServices
         {
             try
             {
-                await _productService.ChangeIdDeleted(request, true);
+                await _productService.ChangeDeletedState(request, true);
                 return new Empty();
             }
             catch (Exception e)
@@ -106,6 +106,18 @@ namespace ProductGrpc.GrpcServices
                 Console.WriteLine(e);
                 throw new RpcException(new Status(StatusCode.Internal, e.Message));
             }
+        }
+
+        /// <summary>
+        /// Desmarcar produto como deletado
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override async Task<Empty> UndoDeleted(ProductIndexRequest request, ServerCallContext context)
+        {
+            await _productService.ChangeDeletedState(request, false);
+            return new Empty();
         }
 
         /// <summary>
@@ -121,7 +133,7 @@ namespace ProductGrpc.GrpcServices
             {
                 var model = await _productService.GetAsync<ProductModel, ProductIndexRequest>(request);
 
-                if (model == null)
+                if (model is null)
                     throw new RpcException(new Status(StatusCode.Internal, "Product não encontado"));
 
                 return model;
@@ -149,7 +161,7 @@ namespace ProductGrpc.GrpcServices
             {
                 var model = await _productService.GetAsync<ProductModel, ProductIndexRequest>(request);
 
-                if (model == null)
+                if (model is null)
                     throw new RpcException(new Status(StatusCode.Internal, "Product não encontado"));
 
                 await responseStream.WriteAsync(model);
@@ -217,17 +229,5 @@ namespace ProductGrpc.GrpcServices
             }
         }
 
-
-        /// <summary>
-        /// Desmarcar produto como deletado
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public override  async Task<Empty> UndoDeleted(ProductIndexRequest request, ServerCallContext context)
-        {
-            await _productService.ChangeIdDeleted(request, false);
-            return new Empty();
-        }
     }
 }

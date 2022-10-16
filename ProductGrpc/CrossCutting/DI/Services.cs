@@ -8,6 +8,7 @@ namespace ProductGrpc.CrossCutting.DI
         public static IServiceCollection MakeInjectDependencies(this IServiceCollection collection)
         {
             collection.AddScoped<IProductService, ProductService>();
+            collection.AddScoped<IProductStatusService, ProductStatusService>();
             return collection;
         }
     }

@@ -1,53 +1,23 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using ProductGrpc.Services.Includes;
+﻿using ProductGrpc.Services.Includes;
 using ProductGrpc.Infra.Repository.Includes;
 using ProductGrpc.Models;
 using ProductGrpc.Models.Enums;
 using ProductGrpc.Protos;
 using ProductGrpc.Helpers;
 using System.Linq.Expressions;
-using Grpc.Core;
 
 namespace ProductGrpc.Services
 {
     public class ProductService : BaseService<Product, Guid>, IProductService
     {
+
         private readonly IProductRepository _productRepository;
+        
         public ProductService(IProductRepository productRepository) : base(productRepository)
         {
             _productRepository = productRepository;
         }
 
-        public async Task ChangeStatus(ProductIndexRequest request, int statusId)
-        {
-            var productId = GetKey(request);
-            var product = await _productRepository.GetAsync(productId);
-            var productUpdated = product;
-
-            if (product == null || productUpdated == null)
-            {
-                Exception exception = new("Produto não encontrado");
-                throw exception;
-            }
-            productUpdated.StatusId = statusId;
-            productUpdated.UpdateAt = DateTime.UtcNow;
-            await _productRepository.UpdateAsync(productUpdated, product);
-        }
-        public async Task ChangeIdDeleted(ProductIndexRequest request, bool isDeleted)
-        {
-            var productId = GetKey(request);
-            var product = await _productRepository.GetAsync(productId);
-            var productUpdated = product;
-
-            if (product == null || productUpdated == null)
-            {
-                Exception exception = new("Produto não encontrado");
-                throw exception;
-            }
-            productUpdated.IsDeleted = isDeleted;
-            productUpdated.UpdateAt = DateTime.UtcNow;
-            await _productRepository.UpdateAsync(productUpdated, product);
-        }
         protected override Guid GetKey<TRequest>(TRequest request)
         {
             var id = GetValueInRequest(request, "Id") as string;
@@ -73,7 +43,6 @@ namespace ProductGrpc.Services
                                     StatusModelToResult(status) :
                                     null,
                 StatusId = model.StatusId,
-                CreatedAt = Timestamp.FromDateTime(model.CreatedAt.ToUniversalTime()),
             };
             return response as TResponse;
         }
@@ -102,7 +71,7 @@ namespace ProductGrpc.Services
                     case CrudType.Update:
                         var product = await _productRepository.GetAsync(id);
 
-                        if (product == null)
+                        if (product is null)
                         {
                             Exception exception = new("Produto não encontrado");
                             throw exception;
@@ -110,7 +79,7 @@ namespace ProductGrpc.Services
 
                         createAt = product.CreatedAt;
                         status = status == 0 ? product.StatusId : status;
-                        isDeleted = isDeleted == null ? product.IsDeleted : isDeleted;
+                        isDeleted = isDeleted is null ? product.IsDeleted : isDeleted;
                         updatedAt = DateTime.UtcNow;
                         break;
                 }
@@ -127,6 +96,39 @@ namespace ProductGrpc.Services
                 CreatedAt = createAt,
                 UpdateAt = updatedAt
             };
+        }
+
+
+        public async Task ChangeStatus(ProductIndexRequest request, int statusId)
+        {
+            var productId = GetKey(request);
+            var product = await _productRepository.GetAsync(productId);
+            var productUpdated = product;
+
+            if (product is null || productUpdated is null)
+            {
+                Exception exception = new("Produto não encontrado");
+                throw exception;
+            }
+            productUpdated.StatusId = statusId;
+            productUpdated.UpdateAt = DateTime.UtcNow;
+            await _productRepository.UpdateAsync(productUpdated, product);
+        }
+
+        public async Task ChangeDeletedState(ProductIndexRequest request, bool isDeleted)
+        {
+            var productId = GetKey(request);
+            var product = await _productRepository.GetAsync(productId);
+            var productUpdated = product;
+
+            if (product is null || productUpdated is null)
+            {
+                Exception exception = new("Produto não encontrado");
+                throw exception;
+            }
+            productUpdated.IsDeleted = isDeleted;
+            productUpdated.UpdateAt = DateTime.UtcNow;
+            await _productRepository.UpdateAsync(productUpdated, product);
         }
 
         public async Task<IEnumerable<Product>> GetProducts(ProductFilter filter)
@@ -163,7 +165,6 @@ namespace ProductGrpc.Services
                 Id = status.Id.ToString(),
                 Name = status.Name
             };
-
 
     }
 }

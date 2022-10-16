@@ -7,6 +7,6 @@ namespace ProductGrpc.Services.Includes
     {
         Task<IEnumerable<Product>> GetProducts(ProductFilter filter);
         Task ChangeStatus(ProductIndexRequest request, int statusId);
-        Task ChangeIdDeleted(ProductIndexRequest request, bool isDeleted);
+        Task ChangeDeletedState(ProductIndexRequest request, bool isDeleted);
     }
 }

@@ -7,6 +7,7 @@ namespace ProductGrpc.CrossCutting.DI
         public static WebApplication MapGrpcServices(this WebApplication app)
         {
             app.MapGrpcService<ProductGrpcService>();
+            app.MapGrpcService<ProductStatusGrpcService>();
             return app;
         }
     }

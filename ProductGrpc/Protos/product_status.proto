@@ -1,0 +1,14 @@
+syntax = "proto3";
+option csharp_namespace = "ProductGrpc.Protos";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+package productGrpc;
+
+service ProductStatusGrpcComunicator {
+	rpc GetProductStatusesAsync (google.protobuf.Empty) returns(stream ProductStatusResult);
+}
+
+message ProductStatusResult {
+	int32 id = 1;
+	string name = 2;
+}

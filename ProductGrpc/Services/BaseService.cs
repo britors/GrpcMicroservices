@@ -7,6 +7,7 @@ namespace ProductGrpc.Services
     public abstract class BaseService<TModel, TKey> : IBaseService<TModel>
         where TModel : class
     {
+
         private readonly IBaseRepository<TModel, TKey> _baseRepository;
         protected BaseService(IBaseRepository<TModel, TKey> baseRepository)
         {
@@ -29,7 +30,7 @@ namespace ProductGrpc.Services
             var model = await GetModel(request, CrudType.Update);
             var key = GetKey(request);
             var source = await _baseRepository.GetAsync(key);
-            if (source == null)
+            if (source is null)
             {
                 Exception exception = new("Produto não encontrado");
                 throw exception;
@@ -43,7 +44,7 @@ namespace ProductGrpc.Services
         {
             var key = GetKey(request);
             var model = await _baseRepository.GetAsync(key);
-            if (model == null)
+            if (model is null)
                 throw new ArgumentNullException(GetType().Name);
             await _baseRepository.DeleteAsync(model);
         }
@@ -58,7 +59,7 @@ namespace ProductGrpc.Services
         {
             var key = GetKey(request);
             var model = await _baseRepository.GetAsync(key);
-            if (model == null)
+            if (model is null)
                 throw new ArgumentNullException(GetType().Name);
 
             return GetReturn<TResponse>(model);
@@ -66,12 +67,12 @@ namespace ProductGrpc.Services
 
         protected object? GetValueInRequest<TRequest>(TRequest request, string propertyName)
         {
-            if (request == null)
+            if (request is null)
                 return null;
 
             var propertyInfo = request.GetType().GetProperty(propertyName);
 
-            if (propertyInfo == null)
+            if (propertyInfo is null)
                 return null;
 
             var value = propertyInfo.GetValue(request, null);
