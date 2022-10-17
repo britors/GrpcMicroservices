@@ -10,9 +10,7 @@ service ProductGrpcCommunicator {
 	rpc UndoDeleted(ProductIndexRequest) returns (google.protobuf.Empty);
 	rpc Active(ProductIndexRequest)	returns (google.protobuf.Empty);
 	rpc Inactive(ProductIndexRequest)	returns (google.protobuf.Empty);
-	rpc GetProduct(ProductIndexRequest)	returns (ProductModel);
 	rpc GetProductAsync(ProductIndexRequest) returns (stream ProductModel);
-	rpc GetProducts(ProductFilter) returns (ProductsResult);
 	rpc GetProductsAsync(ProductFilter) returns (stream ProductModel);
 }
 

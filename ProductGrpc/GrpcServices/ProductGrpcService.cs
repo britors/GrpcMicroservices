@@ -121,31 +121,6 @@ namespace ProductGrpc.GrpcServices
         }
 
         /// <summary>
-        /// Buscar produto pela chave primaria
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        /// <exception cref="RpcException"></exception>
-        public override async Task<ProductModel> GetProduct(ProductIndexRequest request, ServerCallContext context)
-        {
-            try
-            {
-                var model = await _productService.GetAsync<ProductModel, ProductIndexRequest>(request);
-
-                if (model is null)
-                    throw new RpcException(new Status(StatusCode.Internal, "Product não encontado"));
-
-                return model;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new RpcException(new Status(StatusCode.Internal, e.Message));
-            }
-        }
-
-        /// <summary>
         /// Buscar produto (async)
         /// </summary>
         /// <param name="request"></param>
@@ -172,33 +147,6 @@ namespace ProductGrpc.GrpcServices
                 throw new RpcException(new Status(StatusCode.Internal, e.Message));
             }
 
-        }
-
-        /// <summary>
-        /// Retornar lista de produtos (sync)
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        /// <exception cref="RpcException"></exception>
-        public override async Task<ProductsResult> GetProducts(ProductFilter request, ServerCallContext context)
-        {
-            try
-            {
-                var products = await _productService.GetProducts(request);
-                var result = new ProductsResult();
-                foreach (var product in products)
-                {
-                    var model = _productService.GetReturn<ProductModel>(product);
-                    result.Products.Add(model);
-                }
-                return result;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new RpcException(new Status(StatusCode.Internal, e.Message));
-            }
         }
 
         /// <summary>
