@@ -52,7 +52,7 @@ namespace ProductGrpc.Services
             var id = GetKey(request);
             var name = GetValueInRequest(request, "Name") as string;
             var description = GetValueInRequest(request, "Description") as string;
-            var status = GetValueInRequest(request, "StatusId") as int?;
+            var status = GetValueInRequest(request, "StatusId") as ushort?;
             var price = GetValueInRequest(request, "Price") as float?;
             var isDeleted = GetValueInRequest(request, "IsDeleted") as bool?;
 
@@ -90,7 +90,7 @@ namespace ProductGrpc.Services
                 Id = id,
                 Name = name ?? "",
                 Description = description ?? "",
-                StatusId = status ?? (int)ProductStatusEnum.NONE,
+                StatusId = status ?? (ushort)ProductStatusEnum.NONE,
                 Price = price ?? 0,
                 IsDeleted = isDeleted ?? true,
                 CreatedAt = createAt,
@@ -99,7 +99,7 @@ namespace ProductGrpc.Services
         }
 
 
-        public async Task ChangeStatus(ProductIndexRequest request, int statusId)
+        public async Task ChangeStatus(ProductIndexRequest request, ushort statusId)
         {
             var productId = GetKey(request);
             var product = await _productRepository.GetAsync(productId);
