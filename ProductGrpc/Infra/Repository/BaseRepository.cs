@@ -10,8 +10,8 @@ namespace ProductGrpc.Infra.Repository
     {
         private readonly ProductContext _context;
 
-        public BaseRepository(ProductContext context) =>
-            _context = context;
+        public BaseRepository(ProductContext context)
+            => _context = context;
 
         /// <summary>
         /// Criar registro
@@ -53,16 +53,17 @@ namespace ProductGrpc.Infra.Repository
         /// Retornar todos os registros da entidade
         /// </summary>
         /// <returns></returns>
-        public async Task<IQueryable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null,   
+        public async Task<IQueryable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null,
                                                                     string[]? includes = null)
         {
-            var items = predicate != null 
-                ? _context.Set<T>().Where(predicate).AsQueryable() 
+            var items = predicate != null
+                ? _context.Set<T>().Where(predicate).AsQueryable()
                 : _context.Set<T>().AsQueryable();
 
             if (includes != null && includes.Length > 0)
                 foreach (var include in includes)
                     items = items.Include(include);
+            items = items.AsNoTracking();
 
             return await Task.FromResult(items);
         }

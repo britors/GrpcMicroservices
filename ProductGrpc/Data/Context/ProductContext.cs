@@ -9,17 +9,15 @@ namespace ProductGrpc.Data.Context
 
         protected readonly IConfiguration Configuration;
 
-        public ProductContext(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public ProductContext(IConfiguration configuration) 
+            => Configuration = configuration;
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("Grpc.Products"));
-        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
+            => optionsBuilder.UseSqlServer(Configuration.GetConnectionString("Grpc.Products"));
 
+        #region Map Tables
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductStatus> ProductStatuses { get; set; }
+        #endregion
     }
 }

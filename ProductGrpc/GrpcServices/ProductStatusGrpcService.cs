@@ -13,6 +13,13 @@ namespace ProductGrpc.GrpcServices
             _productStatusService = productStatusService;
         }
 
+        /// <summary>
+        /// Retornar os Status possiveis de um pedido
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="responseStream"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override async Task GetProductStatusesAsync(Empty request, IServerStreamWriter<ProductStatusResult> responseStream, ServerCallContext context)
         {
             var statuses = await _productStatusService.GetAllAsync();
