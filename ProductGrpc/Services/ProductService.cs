@@ -52,7 +52,7 @@ namespace ProductGrpc.Services
             var id = GetKey(request);
             var name = GetValueInRequest(request, "Name") as string;
             var description = GetValueInRequest(request, "Description") as string;
-            var status = GetValueInRequest(request, "StatusId") as ushort?;
+            var status = GetValueInRequest(request, "StatusId") as short?;
             var price = GetValueInRequest(request, "Price") as float?;
             var isDeleted = GetValueInRequest(request, "IsDeleted") as bool?;
 
@@ -90,16 +90,16 @@ namespace ProductGrpc.Services
                 Id = id,
                 Name = name ?? "",
                 Description = description ?? "",
-                StatusId = status ?? (ushort)ProductStatusEnum.NONE,
+                StatusId = status ?? (short)ProductStatusEnum.NONE,
                 Price = price ?? 0,
                 IsDeleted = isDeleted ?? true,
                 CreatedAt = createAt,
-                UpdateAt = updatedAt
+                UpdatedAt = updatedAt
             };
         }
 
 
-        public async Task ChangeStatus(ProductIndexRequest request, ushort statusId)
+        public async Task ChangeStatus(ProductIndexRequest request, short statusId)
         {
             var productId = GetKey(request);
             var product = await _productRepository.GetAsync(productId);
@@ -111,7 +111,7 @@ namespace ProductGrpc.Services
                 throw exception;
             }
             productUpdated.StatusId = statusId;
-            productUpdated.UpdateAt = DateTime.UtcNow;
+            productUpdated.UpdatedAt = DateTime.UtcNow;
             await _productRepository.UpdateAsync(productUpdated, product);
         }
 
@@ -127,7 +127,7 @@ namespace ProductGrpc.Services
                 throw exception;
             }
             productUpdated.IsDeleted = isDeleted;
-            productUpdated.UpdateAt = DateTime.UtcNow;
+            productUpdated.UpdatedAt = DateTime.UtcNow;
             await _productRepository.UpdateAsync(productUpdated, product);
         }
 

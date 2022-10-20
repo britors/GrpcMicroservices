@@ -7,8 +7,8 @@ namespace ProductGrpc.Services
 {
     public class ProductStatusService : BaseService<ProductStatus, int>, IProductStatusService
     {
-        
-        public ProductStatusService(IProductStatusRepository productStatusRepository) 
+
+        public ProductStatusService(IProductStatusRepository productStatusRepository)
             : base(productStatusRepository) { }
 
         protected override int GetKey<TRequest>(TRequest request)
@@ -23,8 +23,8 @@ namespace ProductGrpc.Services
         {
             return new ProductStatusResult
             {
-                Id = model.Id,
-               Name = model.Name,
+                Id = (uint)model.Id,
+                Name = model.Name,
             } as TResponse;
         }
     }
