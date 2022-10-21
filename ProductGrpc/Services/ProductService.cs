@@ -138,10 +138,10 @@ namespace ProductGrpc.Services
             Expression<Func<Product, bool>> predicate = (x => x.IsDeleted.Equals(false));
 
             if (!string.IsNullOrEmpty(filter.Name))
-                predicate = FilterHelper<Product>.UnionWithAnd(predicate, filters["Name"]);
+                predicate = FilterHelper<Product>.UnionWithAndClause(predicate, filters["Name"]);
 
             if (filter.StatusId > 0)
-                predicate = FilterHelper<Product>.UnionWithAnd(predicate, filters["StatusId"]);
+                predicate = FilterHelper<Product>.UnionWithAndClause(predicate, filters["StatusId"]);
 
 
             return await GetAllAsync(predicate, new[] { "Status" });
